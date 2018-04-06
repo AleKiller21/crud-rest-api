@@ -69,8 +69,14 @@ def update_user(id, first_name, last_name, email, gamertag, address):
 
 def delete_user(id):
     query = """DELETE FROM User WHERE id = %s;"""
+    response = __retrieve_user_by_id(id)
 
-    return DbService.execute(query, 'd', id)
+    result = DbService.execute(query, 'd', id)
+
+    if result:
+        return response
+    else:
+        return {'message': 'No users with were affected'}
 
 
 def __retrieve_user_by_id(id):
