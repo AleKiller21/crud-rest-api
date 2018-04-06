@@ -3,10 +3,13 @@ from dao.UserDao import create_user, retrieve_user, get_users, update_user, dele
 
 def add_user(payload):
     if __check_fields_existance(payload, 'first_name', 'last_name', 'email', 'gamertag'):
-        return create_user(payload['first_name'], payload['last_name'], payload['email'], payload['gamertag'])
+        if 'address' in payload.keys():
+            return create_user(payload['first_name'], payload['last_name'], payload['email'], payload['gamertag'], payload['address'])
+        else:
+            return create_user(payload['first_name'], payload['last_name'], payload['email'], payload['gamertag'])
 
     else:
-        return 'Missing fields in json'
+        return {'message': 'Missing fields in json'}
 
 
 def get_user(gamertag):

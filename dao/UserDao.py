@@ -5,7 +5,11 @@ def create_user(first_name, last_name, email, gamertag, address=''):
     query = """INSERT INTO User (first_name, last_name, email, address, gamertag)
                 VALUES (%s, %s, %s, %s, %s);"""
 
-    return DbService.execute(query, 'c', first_name, last_name, email, address, gamertag)
+    result = DbService.execute(query, 'c', first_name, last_name, email, address, gamertag)
+    if result:
+        return retrieve_user(gamertag)
+    else:
+        return {'message': 'The user could not be created'}
 
 
 def retrieve_user(gamertag):
