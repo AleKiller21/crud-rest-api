@@ -9,7 +9,7 @@ class DbService:
     @staticmethod
     def execute(query, operation, *params):
         if not DbService.db:
-            DbService.db = connect(host='localhost', user='root', password='ajfz1995', database='mydb')
+            DbService.db = connect(host='localhost', user='root', password='sandals', database='cruddemo')
 
         cursor = DbService.db.cursor()
 
@@ -28,14 +28,13 @@ class DbService:
         except Exception as e:
             DbService.db.rollback()
             print(e)
-            return 'fallo'
-
+            return "fallo"
 
     @staticmethod
     def __generate_write_response(operation):
         if operation == 'c':
-            return 'User created'
+            return {'message': "User created"}
         elif operation == 'u':
-            return 'User has been updated'
+            return {'message': "User has been updated"}
         else:
-            return 'User has been deleted'
+            return {'message': "User has been deleted"}

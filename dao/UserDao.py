@@ -25,7 +25,7 @@ def retrieve_user(gamertag):
             'gamertag': result[5]
         }
     else:
-        return "No user was found with that gamertag"
+        return {'message': "No user was found with that gamertag"}
 
 
 def get_users():
