@@ -14,7 +14,7 @@ class DbService:
         cursor = DbService.db.cursor()
 
         try:
-            cursor.execute(query, params)
+            rows_affected = cursor.execute(query, params)
             if operation == 'r':
                 result = cursor.fetchall()
                 cursor.close()
@@ -23,7 +23,7 @@ class DbService:
             else:
                 DbService.db.commit()
                 cursor.close()
-                return DbService.__generate_write_response(operation)
+                return DbService.__generate_write_response(operation, rows_affected)
 
         except Exception as e:
             DbService.db.rollback()
@@ -31,9 +31,11 @@ class DbService:
             return "fallo"
 
     @staticmethod
-    def __generate_write_response(operation):
-        if operation == 'c':
-            return {'message': "User created"}
+    def __generate_write_response(operation, rows_affected):
+        if rows_affected == 0:
+            return {'message': "No users with that id were affected"}
+        elif operation == 'c':
+            return {'message': "User has been created"}
         elif operation == 'u':
             return {'message': "User has been updated"}
         else:
