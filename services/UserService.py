@@ -9,7 +9,7 @@ def add_user(payload):
             return create_user(payload['first_name'], payload['last_name'], payload['email'], payload['gamertag'])
 
     else:
-        return {'message': 'Missing fields in json'}
+        return {'err': 'Missing fields in json'}
 
 
 def get_user(gamertag):
@@ -27,14 +27,14 @@ def modify_user(payload):
         return update_user(payload['id'], payload['first_name'], payload['last_name'],
                            payload['email'], payload['gamertag'], payload['address'])
     else:
-        return {'message': 'Missing fields in json'}
+        return {'err': 'Missing fields in json'}
 
 
 def remove_user(payload):
     if __check_fields_existance(payload, 'id'):
         return delete_user(payload['id'])
     else:
-        return {'message': 'Missing fields in json'}
+        return {'err': 'Missing fields in json'}
 
 
 def __check_fields_existance(payload, *fields):

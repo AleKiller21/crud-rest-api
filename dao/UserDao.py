@@ -9,7 +9,7 @@ def create_user(first_name, last_name, email, gamertag, address=''):
     if result:
         return retrieve_user(gamertag)
     else:
-        return {'message': 'The user could not be created'}
+        return {'err': 'The user could not be created'}
 
 
 def retrieve_user(gamertag):
@@ -71,6 +71,9 @@ def delete_user(id):
     query = """DELETE FROM User WHERE id = %s;"""
     response = __retrieve_user_by_id(id)
 
+    if 'err' in response.keys():
+        return response
+
     result = DbService.execute(query, 'd', id)
 
     if result:
@@ -84,12 +87,17 @@ def __retrieve_user_by_id(id):
                 FROM User
                 WHERE id = %s;"""
 
-    result = DbService.execute(query, 'r', id)[0]
-    return {
-        'id': result[0],
-        'first_name': result[1],
-        'last_name': result[2],
-        'email': result[3],
-        'address': result[4],
-        'gamertag': result[5]
-    }
+    result = DbService.execute(query, 'r', id)
+    if len(result):
+        result = result[0]
+        return {
+            'id': result[0],
+            'first_name': result[1],
+            'last_name': result[2],
+            'email': result[3],
+            'address': result[4],
+            'gamertag': result[5]
+        }
+
+    else:
+        return {'err': 'No user with that id exists'}
