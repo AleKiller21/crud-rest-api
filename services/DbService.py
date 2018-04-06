@@ -23,7 +23,7 @@ class DbService:
             else:
                 DbService.db.commit()
                 cursor.close()
-                return DbService.__generate_write_response(operation, rows_affected)
+                return rows_affected
 
         except Exception as e:
             DbService.db.rollback()
@@ -33,7 +33,7 @@ class DbService:
     @staticmethod
     def __generate_write_response(operation, rows_affected):
         if rows_affected == 0:
-            return {'message': "No users with that id were affected"}
+            return {'message': "No users"}
         elif operation == 'c':
             return {'message': "User has been created"}
         elif operation == 'u':

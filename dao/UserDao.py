@@ -55,10 +55,31 @@ def update_user(id, first_name, last_name, email, gamertag, address):
                     address = %s
                 WHERE id = %s;"""
 
-    return DbService.execute(query, 'u', first_name, last_name, email, gamertag, address, id)
+    rows_affected = DbService.execute(query, 'u', first_name, last_name, email, gamertag, address, id)
+    if not rows_affected:
+        return {'message': 'No users with were affected'}
+
+    else:
+        return __retrieve_user_by_id(id)
 
 
 def delete_user(id):
     query = """DELETE FROM User WHERE id = %s;"""
 
     return DbService.execute(query, 'd', id)
+
+
+def __retrieve_user_by_id(id):
+    query = """SELECT *
+                FROM User
+                WHERE id = %s;"""
+
+    result = DbService.execute(query, 'r', id)[0]
+    return {
+        'id': result[0],
+        'first_name': result[1],
+        'last_name': result[2],
+        'email': result[3],
+        'address': result[4],
+        'gamertag': result[5]
+    }
