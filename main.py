@@ -1,6 +1,7 @@
 from flask import Flask, json, request
 import services.UserService as userService
 import services.GameService as gameService
+import services.TransactionService as TransactionService
 from services.ResponseService import set_headers
 
 app = Flask(__name__)
@@ -54,6 +55,11 @@ def update_game():
 @app.route('/game/delete', methods=['POST'])
 def delete_game():
     return set_headers(json.dumps(gameService.remove_game(request.json)), {'Content-Type': 'application/json'})
+
+
+@app.route('/order/add', methods=['POST'])
+def add_order():
+    return set_headers(json.dumps(TransactionService.add_order(request.json)), {'Content-Type': 'application/json'})
 
 
 if __name__ == '__main__':
