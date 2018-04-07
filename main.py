@@ -21,12 +21,12 @@ def get_users():
     return set_headers(json.dumps(userService.get_all_users()), {'Content-Type': 'application/json'})
 
 
-@app.route('/users/update', methods=['POST'])
+@app.route('/user/update', methods=['POST'])
 def update_user():
     return set_headers(json.dumps(userService.modify_user(request.json)), {'Content-Type': 'application/json'})
 
 
-@app.route('/users/delete', methods=['POST'])
+@app.route('/user/delete', methods=['POST'])
 def delete_user():
     return set_headers(json.dumps(userService.remove_user(request.json)), {'Content-Type': 'application/json'})
 
@@ -44,6 +44,11 @@ def get_game(name):
 @app.route('/games')
 def get_games():
     return set_headers(json.dumps(gameService.get_all_games()), {'Content-Type': 'application/json'})
+
+
+@app.route('/game/update', methods=['POST'])
+def update_game():
+    return set_headers(json.dumps(gameService.modify_game(request.json)), {'Content-Type': 'application/json'})
 
 
 if __name__ == '__main__':

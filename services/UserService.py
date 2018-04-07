@@ -27,7 +27,7 @@ def get_all_users():
 
 def modify_user(payload):
     if __check_fields_existance_in_payload(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
-                                'profile_picture'):
+                                           'profile_picture'):
         return __user_to_json(update_user(payload))
     else:
         return missing_fields_request

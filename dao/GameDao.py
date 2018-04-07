@@ -36,3 +36,34 @@ def get_games():
         response.append(Game(row))
 
     return response
+
+
+def update_game(payload):
+    query = """UPDATE Game
+                SET name = %s,
+                    developer = %s,
+                    publisher = %s,
+                    price = %s,
+                    description = %s
+                WHERE id = %s;"""
+
+    rows_affected = DbService.execute(query, 'u', payload['name'], payload['developer'], payload['publisher'],
+                                      payload['price'], payload['description'], payload['id'])
+    if not rows_affected:
+        return {'message': 'No games were affected'}
+
+    else:
+        return __retrieve_game_by_id(payload['id'])
+
+
+def __retrieve_game_by_id(id):
+    query = """SELECT *
+                FROM Game
+                WHERE id = %s;"""
+
+    result = DbService.execute(query, 'r', id)
+    if len(result):
+        return Game(result[0])
+
+    else:
+        return {'err': 'No game with that id exists'}
