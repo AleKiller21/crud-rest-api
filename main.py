@@ -1,35 +1,39 @@
 from flask import Flask, json, request
-from services.UserService import add_user, get_user, get_all_users, modify_user, remove_user
+import services.UserService as userService
+import services.GameService as gameService
 from services.ResponseService import set_headers
 
 app = Flask(__name__)
 
 
 @app.route('/user/add', methods=['POST'])
-def add():
-    return set_headers(json.dumps(add_user(request.json)), {'Content-Type': 'application/json'})
+def add_user():
+    return set_headers(json.dumps(userService.add_user(request.json)), {'Content-Type': 'application/json'})
 
 
 @app.route('/user/<gamertag>')
-def user(gamertag):
-    return set_headers(json.dumps(get_user(gamertag)), {'Content-Type': 'application/json'})
+def get_user(gamertag):
+    return set_headers(json.dumps(userService.get_user(gamertag)), {'Content-Type': 'application/json'})
 
 
 @app.route('/users')
-def users():
-    return set_headers(json.dumps(get_all_users()), {'Content-Type': 'application/json'})
+def get_users():
+    return set_headers(json.dumps(userService.get_all_users()), {'Content-Type': 'application/json'})
 
 
 @app.route('/users/update', methods=['POST'])
-def update():
-    return set_headers(json.dumps(modify_user(request.json)), {'Content-Type': 'application/json'})
-    # return modify_user(request.json)
+def update_user():
+    return set_headers(json.dumps(userService.modify_user(request.json)), {'Content-Type': 'application/json'})
 
 
 @app.route('/users/delete', methods=['POST'])
-def delete():
-    return set_headers(json.dumps(remove_user(request.json)), {'Content-Type': 'application/json'})
-    # return remove_user(request.json)
+def delete_user():
+    return set_headers(json.dumps(userService.remove_user(request.json)), {'Content-Type': 'application/json'})
+
+
+@app.route('/game/add', methods=['POST'])
+def add_game():
+    return set_headers(json.dumps(gameService.add_game(request.json)), {'Content-Type': 'application/json'})
 
 
 if __name__ == '__main__':

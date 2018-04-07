@@ -5,20 +5,20 @@ from beans.UserBean import User
 def add_user(payload):
     if __check_fields_existance(payload, 'first_name', 'last_name', 'email', 'gamertag'):
         __set_optional_fields(payload, 'address', 'profile_picture')
-        return user_to_json(create_user(payload))
+        return __user_to_json(create_user(payload))
     else:
         return {'err': 'Missing fields in json'}
 
 
 def get_user(gamertag):
-    return user_to_json(retrieve_user(gamertag))
+    return __user_to_json(retrieve_user(gamertag))
 
 
 def get_all_users():
     result = get_users()
     response = []
     for user in result:
-        response.append(user_to_json(user))
+        response.append(__user_to_json(user))
 
     return response
 
@@ -26,14 +26,14 @@ def get_all_users():
 def modify_user(payload):
     if __check_fields_existance(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
                                 'profile_picture'):
-        return user_to_json(update_user(payload))
+        return __user_to_json(update_user(payload))
     else:
         return {'err': 'Missing fields in json'}
 
 
 def remove_user(payload):
     if __check_fields_existance(payload, 'id'):
-        return user_to_json(delete_user(payload['id']))
+        return __user_to_json(delete_user(payload['id']))
     else:
         return {'err': 'Missing fields in json'}
 
@@ -49,7 +49,7 @@ def __set_optional_fields(payload, *fields):
             payload[field] = ''
 
 
-def user_to_json(user):
+def __user_to_json(user):
     if type(user) is User:
         return {
             'id': user.id,
