@@ -1,9 +1,10 @@
+from services.UtilService import __check_fields_existance_in_payload
 from dao.GameDao import create_game, retrieve_game
 from beans.GameBean import Game
 
 
 def add_game(payload):
-    if __check_fields_existance(payload, 'name', 'developer', 'publisher', 'price', 'description'):
+    if __check_fields_existance_in_payload(payload, 'name', 'developer', 'publisher', 'price', 'description'):
         return __game_to_json(create_game(payload))
     else:
         return {'err': 'Missing fields in json'}
@@ -23,6 +24,4 @@ def __game_to_json(game):
         return game
 
 
-def __check_fields_existance(payload, *fields):
-    if all(key in payload for key in fields):
-        return True
+

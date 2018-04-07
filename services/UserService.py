@@ -1,9 +1,10 @@
+from services.UtilService import __check_fields_existance_in_payload
 from dao.UserDao import create_user, retrieve_user, get_users, update_user, delete_user
 from beans.UserBean import User
 
 
 def add_user(payload):
-    if __check_fields_existance(payload, 'first_name', 'last_name', 'email', 'gamertag'):
+    if __check_fields_existance_in_payload(payload, 'first_name', 'last_name', 'email', 'gamertag'):
         __set_optional_fields(payload, 'address', 'profile_picture')
         return __user_to_json(create_user(payload))
     else:
@@ -24,7 +25,7 @@ def get_all_users():
 
 
 def modify_user(payload):
-    if __check_fields_existance(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
+    if __check_fields_existance_in_payload(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
                                 'profile_picture'):
         return __user_to_json(update_user(payload))
     else:
@@ -32,15 +33,10 @@ def modify_user(payload):
 
 
 def remove_user(payload):
-    if __check_fields_existance(payload, 'id'):
+    if __check_fields_existance_in_payload(payload, 'id'):
         return __user_to_json(delete_user(payload['id']))
     else:
         return {'err': 'Missing fields in json'}
-
-
-def __check_fields_existance(payload, *fields):
-    if all(key in payload for key in fields):
-        return True
 
 
 def __set_optional_fields(payload, *fields):
