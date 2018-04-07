@@ -1,13 +1,14 @@
 from services.DbService import DbService
 
 
-def create_user(first_name, last_name, email, gamertag, address=''):
-    query = """INSERT INTO User (first_name, last_name, email, address, gamertag)
-                VALUES (%s, %s, %s, %s, %s);"""
+def create_user(payload):
+    query = """INSERT INTO User (first_name, last_name, email, address, gamertag, profile_picture)
+                VALUES (%s, %s, %s, %s, %s, %s);"""
 
-    result = DbService.execute(query, 'c', first_name, last_name, email, address, gamertag)
+    result = DbService.execute(query, 'c', payload['first_name'], payload['last_name'], payload['email'],
+                               payload['address'], payload['gamertag'], payload['profile_picture'])
     if result:
-        return retrieve_user(gamertag)
+        return retrieve_user(payload['gamertag'])
     else:
         return {'err': 'The user could not be created'}
 
@@ -26,7 +27,8 @@ def retrieve_user(gamertag):
             'last_name': result[2],
             'email': result[3],
             'address': result[4],
-            'gamertag': result[5]
+            'gamertag': result[5],
+            'profile_picture': result[6]
         }
     else:
         return {'message': "No user was found with that gamertag"}
@@ -44,7 +46,8 @@ def get_users():
             'last_name': row[2],
             'email': row[3],
             'address': row[4],
-            'gamertag': row[5]
+            'gamertag': row[5],
+            'profile_picture': row[6]
         })
 
     return response
