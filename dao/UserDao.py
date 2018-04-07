@@ -33,15 +33,7 @@ def get_users():
     result = DbService.execute(query, 'r')
     response = []
     for row in result:
-        response.append({
-            'id': row[0],
-            'first_name': row[1],
-            'last_name': row[2],
-            'email': row[3],
-            'address': row[4],
-            'gamertag': row[5],
-            'profile_picture': row[6]
-        })
+        response.append(User(row))
 
     return response
 

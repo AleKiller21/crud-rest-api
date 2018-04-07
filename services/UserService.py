@@ -15,7 +15,11 @@ def get_user(gamertag):
 
 def get_all_users():
     result = get_users()
-    return result
+    response = []
+    for user in result:
+        response.append(user_to_json(user))
+
+    return response
 
 
 def modify_user(payload):
