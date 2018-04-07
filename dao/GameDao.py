@@ -25,3 +25,14 @@ def retrieve_game(name):
         return Game(result)
     else:
         return {'message': "No game was found with that name"}
+
+
+def get_games():
+    query = """SELECT * FROM Game;"""
+
+    result = DbService.execute(query, 'r')
+    response = []
+    for row in result:
+        response.append(Game(row))
+
+    return response

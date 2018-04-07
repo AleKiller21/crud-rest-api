@@ -36,5 +36,15 @@ def add_game():
     return set_headers(json.dumps(gameService.add_game(request.json)), {'Content-Type': 'application/json'})
 
 
+@app.route('/game/<name>')
+def get_game(name):
+    return set_headers(json.dumps(gameService.get_game(name)), {'Content-Type': 'application/json'})
+
+
+@app.route('/games')
+def get_games():
+    return set_headers(json.dumps(gameService.get_all_games()), {'Content-Type': 'application/json'})
+
+
 if __name__ == '__main__':
     app.run(debug=True)

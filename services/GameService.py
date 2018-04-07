@@ -1,5 +1,5 @@
 from services.UtilService import __check_fields_existance_in_payload
-from dao.GameDao import create_game, retrieve_game
+from dao.GameDao import create_game, retrieve_game, get_games
 from beans.GameBean import Game
 
 
@@ -8,6 +8,19 @@ def add_game(payload):
         return __game_to_json(create_game(payload))
     else:
         return {'err': 'Missing fields in json'}
+
+
+def get_game(name):
+    return __game_to_json(retrieve_game(name))
+
+
+def get_all_games():
+    result = get_games()
+    response = []
+    for game in result:
+        response.append(__game_to_json(game))
+
+    return response
 
 
 def __game_to_json(game):
