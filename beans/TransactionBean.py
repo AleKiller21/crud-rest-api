@@ -3,3 +3,4 @@ class Transaction:
         self.order_number = payload[0]
         self.user_id = payload[1]
         self.game_id = payload[2]
+        self.status = payload[3]
