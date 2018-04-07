@@ -62,5 +62,15 @@ def add_order():
     return set_headers(json.dumps(TransactionService.add_order(request.json)), {'Content-Type': 'application/json'})
 
 
+@app.route('/order/<int:order_number>')
+def get_order(order_number):
+    return set_headers(json.dumps(TransactionService.get_transaction(order_number)), {'Content-Type': 'application/json'})
+
+
+@app.route('/orders')
+def get_orders():
+    return set_headers(json.dumps(TransactionService.get_all_transactions()), {'Content-Type': 'application/json'})
+
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -23,3 +23,14 @@ def retrieve_transaction(order_number):
         return Transaction(result)
     else:
         return {'message': "No order was found with that order number"}
+
+
+def get_transactions():
+    query = """SELECT * FROM Transaction;"""
+
+    result = DbService.execute(query, 'r')
+    response = []
+    for row in result:
+        response.append(Transaction(row))
+
+    return response
