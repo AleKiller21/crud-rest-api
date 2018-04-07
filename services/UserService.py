@@ -1,4 +1,5 @@
 from dao.UserDao import create_user, retrieve_user, get_users, update_user, delete_user
+from beans.UserBean import User
 
 
 def add_user(payload):
@@ -23,15 +24,16 @@ def get_all_users():
 
 
 def modify_user(payload):
-    if __check_fields_existance(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag'):
-        return update_user(payload)
+    if __check_fields_existance(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
+                                'profile_picture'):
+        return user_to_json(update_user(payload))
     else:
         return {'err': 'Missing fields in json'}
 
 
 def remove_user(payload):
     if __check_fields_existance(payload, 'id'):
-        return delete_user(payload['id'])
+        return user_to_json(delete_user(payload['id']))
     else:
         return {'err': 'Missing fields in json'}
 
@@ -48,12 +50,15 @@ def __set_optional_fields(payload, *fields):
 
 
 def user_to_json(user):
-    return {
-        'id': user.id,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'email': user.email,
-        'address': user.address,
-        'gamertag': user.gamertag,
-        'profile_picture': user.profile_picture
-    }
+    if type(user) is User:
+        return {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'address': user.address,
+            'gamertag': user.gamertag,
+            'profile_picture': user.profile_picture
+        }
+    else:
+        return user

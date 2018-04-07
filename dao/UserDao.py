@@ -51,7 +51,7 @@ def update_user(payload):
     rows_affected = DbService.execute(query, 'u', payload['first_name'], payload['last_name'], payload['email'],
                                       payload['gamertag'], payload['address'], payload['profile_picture'], payload['id'])
     if not rows_affected:
-        return {'message': 'No users with were affected'}
+        return {'message': 'No users were affected'}
 
     else:
         return __retrieve_user_by_id(payload['id'])
@@ -61,7 +61,7 @@ def delete_user(id):
     query = """DELETE FROM User WHERE id = %s;"""
     response = __retrieve_user_by_id(id)
 
-    if 'err' in response.keys():
+    if (not type(response) is User) and 'err' in response.keys():
         return response
 
     result = DbService.execute(query, 'd', id)
@@ -79,16 +79,7 @@ def __retrieve_user_by_id(id):
 
     result = DbService.execute(query, 'r', id)
     if len(result):
-        result = result[0]
-        return {
-            'id': result[0],
-            'first_name': result[1],
-            'last_name': result[2],
-            'email': result[3],
-            'address': result[4],
-            'gamertag': result[5],
-            'profile_picture': result[6]
-        }
+        return User(result[0])
 
     else:
         return {'err': 'No user with that id exists'}
