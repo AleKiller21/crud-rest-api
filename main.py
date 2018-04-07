@@ -51,5 +51,10 @@ def update_game():
     return set_headers(json.dumps(gameService.modify_game(request.json)), {'Content-Type': 'application/json'})
 
 
+@app.route('/game/delete', methods=['POST'])
+def delete_game():
+    return set_headers(json.dumps(gameService.remove_game(request.json)), {'Content-Type': 'application/json'})
+
+
 if __name__ == '__main__':
     app.run(debug=True)

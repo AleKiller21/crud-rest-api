@@ -1,6 +1,6 @@
 from services.UtilService import __check_fields_existance_in_payload
 from services.MessageService import missing_fields_request
-from dao.GameDao import create_game, retrieve_game, get_games, update_game
+from dao.GameDao import create_game, retrieve_game, get_games, update_game, delete_game
 from beans.GameBean import Game
 
 
@@ -27,6 +27,13 @@ def get_all_games():
 def modify_game(payload):
     if __check_fields_existance_in_payload(payload, 'id', 'name', 'developer', 'publisher', 'description', 'price'):
         return __game_to_json(update_game(payload))
+    else:
+        return missing_fields_request
+
+
+def remove_game(payload):
+    if __check_fields_existance_in_payload(payload, 'id'):
+        return __game_to_json(delete_game(payload['id']))
     else:
         return missing_fields_request
 

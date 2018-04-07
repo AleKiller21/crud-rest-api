@@ -56,6 +56,21 @@ def update_game(payload):
         return __retrieve_game_by_id(payload['id'])
 
 
+def delete_game(id):
+    query = """DELETE FROM Game WHERE id = %s;"""
+    response = __retrieve_game_by_id(id)
+
+    if (not type(response) is Game) and 'err' in response.keys():
+        return response
+
+    result = DbService.execute(query, 'd', id)
+
+    if result:
+        return response
+    else:
+        return {'message': 'No games with were affected'}
+
+
 def __retrieve_game_by_id(id):
     query = """SELECT *
                 FROM Game
