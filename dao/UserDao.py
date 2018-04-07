@@ -1,4 +1,5 @@
 from services.DbService import DbService
+from beans.UserBean import User
 
 
 def create_user(payload):
@@ -21,15 +22,7 @@ def retrieve_user(gamertag):
     result = DbService.execute(query, 'r', gamertag)
     if len(result):
         result = result[0]
-        return {
-            'id': result[0],
-            'first_name': result[1],
-            'last_name': result[2],
-            'email': result[3],
-            'address': result[4],
-            'gamertag': result[5],
-            'profile_picture': result[6]
-        }
+        return User(result)
     else:
         return {'message': "No user was found with that gamertag"}
 
@@ -53,21 +46,23 @@ def get_users():
     return response
 
 
-def update_user(id, first_name, last_name, email, gamertag, address):
+def update_user(payload):
     query = """UPDATE User
                 SET first_name = %s,
                     last_name = %s,
                     email = %s,
                     gamertag = %s,
-                    address = %s
+                    address = %s,
+                    profile_picture = %s
                 WHERE id = %s;"""
 
-    rows_affected = DbService.execute(query, 'u', first_name, last_name, email, gamertag, address, id)
+    rows_affected = DbService.execute(query, 'u', payload['first_name'], payload['last_name'], payload['email'],
+                                      payload['gamertag'], payload['address'], payload['profile_picture'], payload['id'])
     if not rows_affected:
         return {'message': 'No users with were affected'}
 
     else:
-        return __retrieve_user_by_id(id)
+        return __retrieve_user_by_id(payload['id'])
 
 
 def delete_user(id):
@@ -99,7 +94,8 @@ def __retrieve_user_by_id(id):
             'last_name': result[2],
             'email': result[3],
             'address': result[4],
-            'gamertag': result[5]
+            'gamertag': result[5],
+            'profile_picture': result[6]
         }
 
     else:

@@ -4,14 +4,13 @@ from dao.UserDao import create_user, retrieve_user, get_users, update_user, dele
 def add_user(payload):
     if __check_fields_existance(payload, 'first_name', 'last_name', 'email', 'gamertag'):
         __set_optional_fields(payload, 'address', 'profile_picture')
-        return create_user(payload)
+        return user_to_json(create_user(payload))
     else:
         return {'err': 'Missing fields in json'}
 
 
 def get_user(gamertag):
-    result = retrieve_user(gamertag)
-    return result
+    return user_to_json(retrieve_user(gamertag))
 
 
 def get_all_users():
@@ -21,8 +20,7 @@ def get_all_users():
 
 def modify_user(payload):
     if __check_fields_existance(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag'):
-        return update_user(payload['id'], payload['first_name'], payload['last_name'],
-                           payload['email'], payload['gamertag'], payload['address'])
+        return update_user(payload)
     else:
         return {'err': 'Missing fields in json'}
 
@@ -43,3 +41,15 @@ def __set_optional_fields(payload, *fields):
     for field in fields:
         if field not in payload.keys():
             payload[field] = ''
+
+
+def user_to_json(user):
+    return {
+        'id': user.id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'address': user.address,
+        'gamertag': user.gamertag,
+        'profile_picture': user.profile_picture
+    }
