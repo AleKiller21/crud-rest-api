@@ -76,7 +76,7 @@ def delete_user(id):
 
 
 def login_user(payload):
-    query = "SELECT email, password, gamertag FROM User WHERE email = %s AND password = %s"
+    query = "SELECT email, password, gamertag FROM User WHERE email = %s AND password = %s;"
 
     result = DbService.execute(query, 'r', payload['email'], payload['password'])
 
@@ -85,6 +85,17 @@ def login_user(payload):
         return payload
     else:
         return {'err': "No user was found with those credentials"}
+
+
+def get_user_role_gamertag(email):
+    query = 'SELECT role, gamertag FROM User WHERE email = %s;'
+
+    result = DbService.execute(query, 'r', email)[0]
+
+    return {
+        'role': result[0],
+        'gamertag': result[1]
+    }
 
 
 def __retrieve_user_by_id(id):

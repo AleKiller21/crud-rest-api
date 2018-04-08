@@ -21,3 +21,11 @@ def authenticate(token):
     except Exception as e:
         print(e)
         return {'err': e}
+
+
+def check_token_existance(headers):
+    return 'Authorization' in headers.keys()
+
+
+def extract_token_from_header(header):
+    return header[header.find(' ') + 1:]

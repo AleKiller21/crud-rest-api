@@ -14,7 +14,7 @@ def add_user():
 
 @app.route('/user/<gamertag>')
 def get_user(gamertag):
-    return set_headers(json.dumps(userService.get_user(gamertag)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(userService.get_user(gamertag, request.headers)), {'Content-Type': 'application/json'})
 
 
 @app.route('/users')
