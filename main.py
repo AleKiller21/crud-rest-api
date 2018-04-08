@@ -63,8 +63,20 @@ def add_order():
 
 
 @app.route('/order/<int:order_number>')
-def get_order(order_number):
-    return set_headers(json.dumps(TransactionService.get_transaction(order_number)),
+def get_order_by_order_number(order_number):
+    return set_headers(json.dumps(TransactionService.get_transaction_by_order_number(order_number)),
+                       {'Content-Type': 'application/json'})
+
+
+@app.route('/orders/game/<int:game_id>')
+def get_order_by_game_id(game_id):
+    return set_headers(json.dumps(TransactionService.get_transactions_by_game_id(game_id)),
+                       {'Content-Type': 'application/json'})
+
+
+@app.route('/orders/user/<int:user_id>')
+def get_order_by_user_id(user_id):
+    return set_headers(json.dumps(TransactionService.get_transactions_by_user_id(user_id)),
                        {'Content-Type': 'application/json'})
 
 
