@@ -1,11 +1,12 @@
-from services.UtilService import __check_fields_existance_in_payload
+from services.UtilService import check_fields_existance_in_payload
 from services.MessageService import missing_fields_request
-from dao.UserDao import create_user, retrieve_user, get_users, update_user, delete_user
+import services.AuthService as AuthService
+from dao.UserDao import create_user, retrieve_user, get_users, update_user, delete_user, login_user
 from beans.UserBean import User
 
 
 def add_user(payload):
-    if __check_fields_existance_in_payload(payload, 'first_name', 'email', 'gamertag', 'password'):
+    if check_fields_existance_in_payload(payload, 'first_name', 'email', 'gamertag', 'password'):
         __set_optional_fields(payload, 'last_name', 'address', 'profile_picture')
         return __user_to_json(create_user(payload))
     else:
@@ -26,7 +27,7 @@ def get_all_users():
 
 
 def modify_user(payload):
-    if __check_fields_existance_in_payload(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
+    if check_fields_existance_in_payload(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
                                            'profile_picture'):
         return __user_to_json(update_user(payload))
     else:
@@ -34,10 +35,22 @@ def modify_user(payload):
 
 
 def remove_user(payload):
-    if __check_fields_existance_in_payload(payload, 'id'):
+    if check_fields_existance_in_payload(payload, 'id'):
         return __user_to_json(delete_user(payload['id']))
     else:
         return missing_fields_request
+
+
+def login(payload):
+    if not check_fields_existance_in_payload(payload, 'email', 'password'):
+        return missing_fields_request
+
+    result = login_user(payload)
+
+    if 'err' in result.keys():
+        return result
+
+    return {'token': 'Basic ' + AuthService.to_base64(payload['email'], payload['password']).decode('utf-8')}
 
 
 def __set_optional_fields(payload, *fields):

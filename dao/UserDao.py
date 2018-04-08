@@ -72,6 +72,17 @@ def delete_user(id):
         return {'message': 'No users with were affected'}
 
 
+def login_user(payload):
+    query = "SELECT email, password FROM User WHERE email = %s AND password = %s"
+
+    result = DbService.execute(query, 'r', payload['email'], payload['password'])
+
+    if len(result):
+        return payload
+    else:
+        return {'err': "No user was found with those credentials"}
+
+
 def __retrieve_user_by_id(id):
     query = """SELECT *
                 FROM User

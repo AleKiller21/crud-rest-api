@@ -1,4 +1,4 @@
-from services.UtilService import __check_fields_existance_in_payload
+from services.UtilService import check_fields_existance_in_payload
 from services.MessageService import missing_fields_request
 from dao.TransactionDao import create_order, retrieve_transactions_by_game_id, retrieve_transaction_by_order_number, \
     retrieve_transactions_by_user_id, get_transactions, update_transaction
@@ -6,7 +6,7 @@ from beans.TransactionBean import Transaction
 
 
 def add_order(payload):
-    if __check_fields_existance_in_payload(payload, 'user_id', 'game_id'):
+    if check_fields_existance_in_payload(payload, 'user_id', 'game_id'):
         return __transaction_to_json(create_order(payload))
     else:
         return missing_fields_request
@@ -30,7 +30,7 @@ def get_all_transactions():
 
 
 def modify_transaction_status(payload):
-    if __check_fields_existance_in_payload(payload, 'status', 'order_number'):
+    if check_fields_existance_in_payload(payload, 'status', 'order_number'):
         return __transaction_to_json(update_transaction(payload))
     else:
         return missing_fields_request
