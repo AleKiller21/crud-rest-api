@@ -3,9 +3,9 @@ from beans.TransactionBean import Transaction
 
 
 def create_order(payload):
-    query = """INSERT INTO Transaction (user_id, game_id) VALUES (%s, %s);"""
+    query = """INSERT INTO Transaction (user_id, game_id, total) VALUES (%s, %s, %s);"""
 
-    result = DbService.execute(query, 'c', payload['user_id'], payload['game_id'])
+    result = DbService.execute(query, 'c', payload['user_id'], payload['game_id'], payload['total'])
     if result:
         return {'message': 'The order was a success'}
     else:

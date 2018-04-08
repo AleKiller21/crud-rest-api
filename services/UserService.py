@@ -7,7 +7,7 @@ from beans.UserBean import User
 
 def add_user(payload):
     if check_fields_existance_in_payload(payload, 'first_name', 'email', 'gamertag', 'password'):
-        __set_optional_fields(payload, 'last_name', 'address', 'profile_picture')
+        __set_optional_fields(payload, 'last_name', 'address', 'profile_picture', 'role')
         return __user_to_json(create_user(payload))
     else:
         return missing_fields_request
@@ -50,13 +50,19 @@ def login(payload):
     if 'err' in result.keys():
         return result
 
-    return {'token': 'Basic ' + AuthService.to_base64(payload['email'], payload['password']).decode('utf-8')}
+    return {
+        'token': 'Basic ' + AuthService.to_base64(payload['email'], payload['password']).decode('utf-8'),
+        'gamertag': result['gamertag']
+    }
 
 
 def __set_optional_fields(payload, *fields):
     for field in fields:
         if field not in payload.keys():
-            payload[field] = ''
+            if field == 'role':
+                payload[field] = 'customer'
+            else:
+                payload[field] = ''
 
 
 def __user_to_json(user):

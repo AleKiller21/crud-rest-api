@@ -98,3 +98,16 @@ def login():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+# Authentication:
+# User:
+#     GET my info
+#     PUT my info
+#     POST order
+#     GET my orders
+#
+# Admin:
+#     GET users
+#     GET games
+#     GET orders
+#     POST games

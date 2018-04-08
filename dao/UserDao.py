@@ -3,11 +3,13 @@ from beans.UserBean import User
 
 
 def create_user(payload):
-    query = """INSERT INTO User (first_name, last_name, email, address, gamertag, profile_picture, password)
-                VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+    query = """INSERT INTO User (first_name, last_name, email, address, gamertag, profile_picture,
+    password, role)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
 
     result = DbService.execute(query, 'c', payload['first_name'], payload['last_name'], payload['email'],
-                               payload['address'], payload['gamertag'], payload['profile_picture'], payload['password'])
+                               payload['address'], payload['gamertag'], payload['profile_picture'], payload['password'],
+                               payload['role'])
     if result:
         return retrieve_user(payload['gamertag'])
     else:
@@ -49,7 +51,8 @@ def update_user(payload):
                 WHERE id = %s;"""
 
     rows_affected = DbService.execute(query, 'u', payload['first_name'], payload['last_name'], payload['email'],
-                                      payload['gamertag'], payload['address'], payload['profile_picture'], payload['id'])
+                                      payload['gamertag'], payload['address'], payload['profile_picture'],
+                                      payload['id'])
     if not rows_affected:
         return {'message': 'No users were affected'}
 
@@ -73,11 +76,12 @@ def delete_user(id):
 
 
 def login_user(payload):
-    query = "SELECT email, password FROM User WHERE email = %s AND password = %s"
+    query = "SELECT email, password, gamertag FROM User WHERE email = %s AND password = %s"
 
     result = DbService.execute(query, 'r', payload['email'], payload['password'])
 
     if len(result):
+        payload['gamertag'] = result[0][2]
         return payload
     else:
         return {'err': "No user was found with those credentials"}

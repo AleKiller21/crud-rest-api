@@ -6,7 +6,7 @@ from beans.TransactionBean import Transaction
 
 
 def add_order(payload):
-    if check_fields_existance_in_payload(payload, 'user_id', 'game_id'):
+    if check_fields_existance_in_payload(payload, 'user_id', 'game_id', 'total'):
         return __transaction_to_json(create_order(payload))
     else:
         return missing_fields_request
