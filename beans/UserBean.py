@@ -7,3 +7,14 @@ class User:
         self.address = payload[4]
         self.gamertag = payload[5]
         self.profile_picture = payload[6]
+
+    def to_dictionary(self):
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+            'address': self.address,
+            'gamertag': self.gamertag,
+            'profile_picture': self.profile_picture
+        }

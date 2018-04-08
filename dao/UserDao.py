@@ -3,11 +3,11 @@ from beans.UserBean import User
 
 
 def create_user(payload):
-    query = """INSERT INTO User (first_name, last_name, email, address, gamertag, profile_picture)
-                VALUES (%s, %s, %s, %s, %s, %s);"""
+    query = """INSERT INTO User (first_name, last_name, email, address, gamertag, profile_picture, password)
+                VALUES (%s, %s, %s, %s, %s, %s, %s);"""
 
     result = DbService.execute(query, 'c', payload['first_name'], payload['last_name'], payload['email'],
-                               payload['address'], payload['gamertag'], payload['profile_picture'])
+                               payload['address'], payload['gamertag'], payload['profile_picture'], payload['password'])
     if result:
         return retrieve_user(payload['gamertag'])
     else:

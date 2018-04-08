@@ -3,11 +3,11 @@ from beans.GameBean import Game
 
 
 def create_game(payload):
-    query = """INSERT INTO Game (name, developer, publisher, price, description)
-                VALUES (%s, %s, %s, %s, %s);"""
+    query = """INSERT INTO Game (name, developer, publisher, price, description, image)
+                VALUES (%s, %s, %s, %s, %s, %s);"""
 
     result = DbService.execute(query, 'c', payload['name'], payload['developer'], payload['publisher'],
-                               payload['price'], payload['description'])
+                               payload['price'], payload['description'], payload['image'])
     if result:
         return retrieve_game(payload['name'])
     else:
@@ -44,11 +44,12 @@ def update_game(payload):
                     developer = %s,
                     publisher = %s,
                     price = %s,
-                    description = %s
+                    description = %s,
+                    image = %s
                 WHERE id = %s;"""
 
     rows_affected = DbService.execute(query, 'u', payload['name'], payload['developer'], payload['publisher'],
-                                      payload['price'], payload['description'], payload['id'])
+                                      payload['price'], payload['description'], payload['image'], payload['id'])
     if not rows_affected:
         return {'message': 'No games were affected'}
 

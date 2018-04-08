@@ -40,14 +40,7 @@ def remove_game(payload):
 
 def __game_to_json(game):
     if type(game) is Game:
-        return {
-            'id': game.id,
-            'name': game.name,
-            'developer': game.developer,
-            'publisher': game.publisher,
-            'price': game.price,
-            'description': game.description
-        }
+        return game.to_dictionary()
     else:
         return game
 

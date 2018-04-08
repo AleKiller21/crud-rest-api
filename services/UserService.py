@@ -5,8 +5,8 @@ from beans.UserBean import User
 
 
 def add_user(payload):
-    if __check_fields_existance_in_payload(payload, 'first_name', 'last_name', 'email', 'gamertag'):
-        __set_optional_fields(payload, 'address', 'profile_picture')
+    if __check_fields_existance_in_payload(payload, 'first_name', 'email', 'gamertag', 'password'):
+        __set_optional_fields(payload, 'last_name', 'address', 'profile_picture')
         return __user_to_json(create_user(payload))
     else:
         return missing_fields_request
@@ -48,14 +48,6 @@ def __set_optional_fields(payload, *fields):
 
 def __user_to_json(user):
     if type(user) is User:
-        return {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'address': user.address,
-            'gamertag': user.gamertag,
-            'profile_picture': user.profile_picture
-        }
+        return user.to_dictionary()
     else:
         return user

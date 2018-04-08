@@ -46,11 +46,6 @@ def process_transactions_projection(dao_result):
 
 def __transaction_to_json(order):
     if type(order) is Transaction:
-        return {
-            'order_number': order.order_number,
-            'user_id': order.user_id,
-            'game_id': order.game_id,
-            'status': order.status
-        }
+        return order.to_dictionary()
     else:
         return order
