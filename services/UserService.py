@@ -44,7 +44,17 @@ def get_all_users(headers):
     return response
 
 
-def modify_user(payload):
+def modify_user(payload, headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    result = UserDao.check_email_gamertag_duplication(payload['id'], payload['email'], payload['gamertag'])
+
+    if result:
+        return MessageService.user_info_duplication
+
     if check_fields_existance_in_payload(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
                                          'profile_picture'):
         return __user_to_json(UserDao.update_user(payload))
@@ -101,3 +111,7 @@ def __user_to_json(user):
 def __is_user_admin(auth):
     result = UserDao.get_user_role_gamertag(auth['email'])
     return result['role'] == 'admin'
+
+
+def check_user_info_duplication(payload):
+    result = UserDao.check_email_gamertag_duplication(payload['id'], payload['email'], payload['gamertag'])
