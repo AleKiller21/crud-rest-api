@@ -51,12 +51,12 @@ def get_games():
 
 @app.route('/game/update', methods=['POST'])
 def update_game():
-    return set_headers(json.dumps(gameService.modify_game(request.json)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(gameService.modify_game(request.json, request.headers)), {'Content-Type': 'application/json'})
 
 
 @app.route('/game/delete', methods=['POST'])
 def delete_game():
-    return set_headers(json.dumps(gameService.remove_game(request.json)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(gameService.remove_game(request.json, request.headers)), {'Content-Type': 'application/json'})
 
 
 @app.route('/order/add', methods=['POST'])

@@ -34,14 +34,30 @@ def get_all_games():
     return response
 
 
-def modify_game(payload):
+def modify_game(payload, headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    if not is_user_admin(auth):
+        return MessageService.lack_of_privilege
+
     if check_fields_existance_in_payload(payload, 'id', 'name', 'developer', 'publisher', 'description', 'price'):
         return __game_to_json(update_game(payload))
     else:
         return MessageService.missing_fields_request
 
 
-def remove_game(payload):
+def remove_game(payload, headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    if not is_user_admin(auth):
+        return MessageService.lack_of_privilege
+
     if check_fields_existance_in_payload(payload, 'id'):
         return __game_to_json(delete_game(payload['id']))
     else:
