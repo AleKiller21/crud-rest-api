@@ -51,12 +51,14 @@ def get_games():
 
 @app.route('/game/update', methods=['POST'])
 def update_game():
-    return set_headers(json.dumps(gameService.modify_game(request.json, request.headers)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(gameService.modify_game(request.json, request.headers)),
+                       {'Content-Type': 'application/json'})
 
 
 @app.route('/game/delete', methods=['POST'])
 def delete_game():
-    return set_headers(json.dumps(gameService.remove_game(request.json, request.headers)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(gameService.remove_game(request.json, request.headers)),
+                       {'Content-Type': 'application/json'})
 
 
 @app.route('/order/add', methods=['POST'])
@@ -84,12 +86,13 @@ def get_order_by_user_id():
 
 @app.route('/orders')
 def get_orders():
-    return set_headers(json.dumps(transactionService.get_all_transactions()), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(transactionService.get_all_transactions(request.headers)),
+                       {'Content-Type': 'application/json'})
 
 
 @app.route('/order/update', methods=['POST'])
 def update_order():
-    return set_headers(json.dumps(transactionService.modify_transaction_status(request.json)),
+    return set_headers(json.dumps(transactionService.modify_transaction_status(request.json, request.headers)),
                        {'Content-Type': 'application/json'})
 
 

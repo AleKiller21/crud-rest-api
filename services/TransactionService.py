@@ -55,12 +55,28 @@ def get_transactions_by_game_id(game_id, headers):
     return process_transactions_projection(retrieve_transactions_by_game_id(game_id))
 
 
-def get_all_transactions():
+def get_all_transactions(headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    if not is_user_admin(auth):
+        return lack_of_privilege
+
     result = get_transactions()
     return process_transactions_projection(result)
 
 
-def modify_transaction_status(payload):
+def modify_transaction_status(payload, headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    if not is_user_admin(auth):
+        return lack_of_privilege
+
     if check_fields_existance_in_payload(payload, 'status', 'order_number'):
         return __transaction_to_json(update_transaction(payload))
     else:
