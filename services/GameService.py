@@ -1,14 +1,24 @@
 from services.UtilService import check_fields_existance_in_payload
-from services.MessageService import missing_fields_request
+from services.UserService import is_user_admin
+import services.AuthService as AuthService
+import services.MessageService as MessageService
 from dao.GameDao import create_game, retrieve_game, get_games, update_game, delete_game
 from beans.GameBean import Game
 
 
-def add_game(payload):
+def add_game(payload, headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    if not is_user_admin(auth):
+        return MessageService.lack_of_privilege
+
     if check_fields_existance_in_payload(payload, 'name', 'developer', 'publisher', 'price', 'description'):
         return __game_to_json(create_game(payload))
     else:
-        return missing_fields_request
+        return MessageService.missing_fields_request
 
 
 def get_game(name):
@@ -28,14 +38,14 @@ def modify_game(payload):
     if check_fields_existance_in_payload(payload, 'id', 'name', 'developer', 'publisher', 'description', 'price'):
         return __game_to_json(update_game(payload))
     else:
-        return missing_fields_request
+        return MessageService.missing_fields_request
 
 
 def remove_game(payload):
     if check_fields_existance_in_payload(payload, 'id'):
         return __game_to_json(delete_game(payload['id']))
     else:
-        return missing_fields_request
+        return MessageService.missing_fields_request
 
 
 def __game_to_json(game):

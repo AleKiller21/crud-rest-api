@@ -36,7 +36,7 @@ def delete_user():
 
 @app.route('/game/add', methods=['POST'])
 def add_game():
-    return set_headers(json.dumps(gameService.add_game(request.json)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(gameService.add_game(request.json, request.headers)), {'Content-Type': 'application/json'})
 
 
 @app.route('/game/<name>')

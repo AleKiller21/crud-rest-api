@@ -33,7 +33,7 @@ def get_all_users(headers):
     if 'err' in auth.keys():
         return auth
 
-    if not __is_user_admin(auth):
+    if not is_user_admin(auth):
         return MessageService.lack_of_privilege
 
     result = UserDao.get_users()
@@ -68,7 +68,7 @@ def remove_user(payload, headers):
     if 'err' in auth.keys():
         return auth
 
-    if not __is_user_admin(auth):
+    if not is_user_admin(auth):
         return MessageService.lack_of_privilege
 
     if check_fields_existance_in_payload(payload, 'id'):
@@ -108,10 +108,6 @@ def __user_to_json(user):
         return user
 
 
-def __is_user_admin(auth):
+def is_user_admin(auth):
     result = UserDao.get_user_role_gamertag(auth['email'])
     return result['role'] == 'admin'
-
-
-def check_user_info_duplication(payload):
-    result = UserDao.check_email_gamertag_duplication(payload['id'], payload['email'], payload['gamertag'])
