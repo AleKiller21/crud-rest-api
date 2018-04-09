@@ -29,7 +29,8 @@ def update_user():
 
 @app.route('/user/delete', methods=['POST'])
 def delete_user():
-    return set_headers(json.dumps(userService.remove_user(request.json)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(userService.remove_user(request.json, request.headers)),
+                       {'Content-Type': 'application/json'})
 
 
 @app.route('/game/add', methods=['POST'])

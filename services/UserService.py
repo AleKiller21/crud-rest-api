@@ -33,9 +33,7 @@ def get_all_users(headers):
     if 'err' in auth.keys():
         return auth
 
-    result = UserDao.get_user_role_gamertag(auth['email'])
-
-    if result['role'] != 'admin':
+    if not __is_user_admin(auth):
         return MessageService.lack_of_privilege
 
     result = UserDao.get_users()
@@ -54,7 +52,15 @@ def modify_user(payload):
         return MessageService.missing_fields_request
 
 
-def remove_user(payload):
+def remove_user(payload, headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    if not __is_user_admin(auth):
+        return MessageService.lack_of_privilege
+
     if check_fields_existance_in_payload(payload, 'id'):
         return __user_to_json(UserDao.delete_user(payload['id']))
     else:
@@ -90,3 +96,8 @@ def __user_to_json(user):
         return user.to_dictionary()
     else:
         return user
+
+
+def __is_user_admin(auth):
+    result = UserDao.get_user_role_gamertag(auth['email'])
+    return result['role'] == 'admin'
