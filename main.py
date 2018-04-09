@@ -7,6 +7,14 @@ from services.ResponseService import set_headers
 app = Flask(__name__)
 
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+
 @app.route('/user/add', methods=['POST'])
 def add_user():
     return set_headers(json.dumps(userService.add_user(request.json)), {'Content-Type': 'application/json'})
@@ -14,7 +22,8 @@ def add_user():
 
 @app.route('/user/<gamertag>')
 def get_user(gamertag):
-    return set_headers(json.dumps(userService.get_user(gamertag, request.headers)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(userService.get_user(gamertag, request.headers)),
+                       {'Content-Type': 'application/json'})
 
 
 @app.route('/users')
