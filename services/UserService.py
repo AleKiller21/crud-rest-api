@@ -14,14 +14,10 @@ def add_user(payload):
 
 
 def get_user(gamertag, headers):
-    if not AuthService.check_token_existance(headers):
-        return MessageService.authentication_failed
-
-    token = AuthService.extract_token_from_header(headers['Authorization'])
-    auth = AuthService.authenticate(token)
+    auth = AuthService.get_user_email_from_token(headers)
 
     if 'err' in auth.keys():
-        return {'err': 'session has expired. Please login again'}
+        return auth
 
     result = UserDao.get_user_role_gamertag(auth['email'])
 
@@ -31,7 +27,17 @@ def get_user(gamertag, headers):
         return __user_to_json(UserDao.retrieve_user(result['gamertag']))
 
 
-def get_all_users():
+def get_all_users(headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    result = UserDao.get_user_role_gamertag(auth['email'])
+
+    if result['role'] != 'admin':
+        return MessageService.lack_of_privilege
+
     result = UserDao.get_users()
     response = []
     for user in result:
@@ -42,7 +48,7 @@ def get_all_users():
 
 def modify_user(payload):
     if check_fields_existance_in_payload(payload, 'id', 'first_name', 'last_name', 'email', 'address', 'gamertag',
-                                           'profile_picture'):
+                                         'profile_picture'):
         return __user_to_json(UserDao.update_user(payload))
     else:
         return MessageService.missing_fields_request

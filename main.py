@@ -19,7 +19,7 @@ def get_user(gamertag):
 
 @app.route('/users')
 def get_users():
-    return set_headers(json.dumps(userService.get_all_users()), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(userService.get_all_users(request.headers)), {'Content-Type': 'application/json'})
 
 
 @app.route('/user/update', methods=['POST'])
