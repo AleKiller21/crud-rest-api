@@ -6,7 +6,7 @@ def create_order(payload):
     query = """INSERT INTO Transaction (user_id, game_id, total) VALUES (%s, %s, %s);"""
 
     result = DbService.execute(query, 'c', payload['user_id'], payload['game_id'], payload['total'])
-    if result:
+    if result and 'err' not in result.keys():
         return {'message': 'The order was a success'}
     else:
         return {'err': 'The order could not be processed'}
