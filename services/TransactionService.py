@@ -2,7 +2,7 @@ from services.UtilService import check_fields_existance_in_payload
 from services.MessageService import missing_fields_request, lack_of_privilege
 from services.UserService import is_user_admin
 from dao.TransactionDao import create_order, retrieve_transactions_by_game_id, retrieve_transaction_by_order_number, \
-    retrieve_transactions_by_user_id, get_transactions, update_transaction
+    retrieve_transactions_by_user_email, get_transactions, update_transaction
 from beans.TransactionBean import Transaction
 import services.AuthService as AuthService
 
@@ -30,8 +30,17 @@ def get_transaction_by_order_number(order_number, headers):
     return __transaction_to_json(retrieve_transaction_by_order_number(order_number))
 
 
-def get_transactions_by_user_id(user_id):
-    return process_transactions_projection(retrieve_transactions_by_user_id(user_id))
+def get_transactions_by_user_id(headers):
+    auth = AuthService.get_user_email_from_token(headers)
+
+    if 'err' in auth.keys():
+        return auth
+
+    transactions = retrieve_transactions_by_user_email(auth['email'])
+    if not len(transactions):
+        return {'message': 'No orders were found'}
+
+    return process_transactions_projection(transactions)
 
 
 def get_transactions_by_game_id(game_id, headers):

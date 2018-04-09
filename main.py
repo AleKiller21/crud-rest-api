@@ -76,9 +76,9 @@ def get_order_by_game_id(game_id):
                        {'Content-Type': 'application/json'})
 
 
-@app.route('/orders/user/<int:user_id>')
-def get_order_by_user_id(user_id):
-    return set_headers(json.dumps(transactionService.get_transactions_by_user_id(user_id)),
+@app.route('/orders/user')
+def get_order_by_user_id():
+    return set_headers(json.dumps(transactionService.get_transactions_by_user_id(request.headers)),
                        {'Content-Type': 'application/json'})
 
 
