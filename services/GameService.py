@@ -35,7 +35,7 @@ def get_game(name):
         if game:
             return MessageService.generate_success_message('', game.to_dictionary())
         else:
-            return MessageService.generate_custom_message('The game was not found', 200, {})
+            return MessageService.generate_custom_message('The game was not found', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -51,7 +51,7 @@ def get_all_games():
         if len(games):
             return MessageService.generate_success_message('', games)
         else:
-            return MessageService.generate_custom_message('No games were found', 200, [])
+            return MessageService.generate_custom_message('No games were found', [])
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -73,7 +73,7 @@ def modify_game(payload, headers):
             if game:
                 return MessageService.generate_success_message('', game.to_dictionary())
             else:
-                return MessageService.generate_custom_message('No game with that id was found', 200, {})
+                return MessageService.generate_custom_message('No game with that id was found', {})
         else:
             return MessageService.missing_fields_request
 
@@ -97,7 +97,7 @@ def remove_game(payload, headers):
             if game:
                 return MessageService.generate_success_message('', game.to_dictionary())
             else:
-                return MessageService.generate_custom_message('The game could not be removed', 200, {})
+                return MessageService.generate_custom_message('The game could not be removed', {})
         else:
             return MessageService.missing_fields_request
 

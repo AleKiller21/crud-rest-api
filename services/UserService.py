@@ -42,7 +42,7 @@ def get_user(gamertag, headers):
         if data:
             return MessageService.generate_success_message('', data.to_dictionary())
         else:
-            return MessageService.generate_custom_message('No user was found with that gamertag', 200)
+            return MessageService.generate_custom_message('No user was found with that gamertag', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -66,7 +66,7 @@ def get_all_users(headers):
         if len(response):
             return MessageService.generate_success_message('', response)
         else:
-            return MessageService.generate_custom_message('No users were found', 200)
+            return MessageService.generate_custom_message('No users were found', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -90,7 +90,7 @@ def modify_user(payload, headers):
             if user:
                 return MessageService.generate_success_message('', user.to_dictionary())
             else:
-                MessageService.generate_custom_message('No user was found', 200)
+                MessageService.generate_custom_message('No user was found', {})
         else:
             return MessageService.missing_fields_request
 
@@ -114,7 +114,7 @@ def remove_user(payload, headers):
             if user:
                 return MessageService.generate_success_message('', user.to_dictionary())
             else:
-                return MessageService.generate_custom_message('No user was found', 200)
+                return MessageService.generate_custom_message('No user was found', {})
         else:
             return MessageService.missing_fields_request
 

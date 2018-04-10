@@ -16,5 +16,5 @@ def generate_internal_server_error(message):
     return {'message': message, 'code': 500}
 
 
-def generate_custom_message(message, code, data):
-    return {'message': message, 'data': data, 'code': code}
+def generate_custom_message(message, data):
+    return {'message': message, 'data': data, 'code': 200}

@@ -74,7 +74,7 @@ def get_transactions_by_game_id(game_id, headers):
         if len(orders):
             return MessageService.generate_success_message('', process_transactions_projection())
         else:
-            return MessageService.generate_custom_message('No orders were found', 200, [])
+            return MessageService.generate_custom_message('No orders were found', [])
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -93,9 +93,9 @@ def get_all_transactions(headers):
         orders = TransactionDao.get_transactions()
 
         if len(orders):
-            return MessageService.generate_success_message('', process_transactions_projection())
+            return MessageService.generate_success_message('', process_transactions_projection(orders))
         else:
-            return MessageService.generate_custom_message('No orders were found', 200, [])
+            return MessageService.generate_custom_message('No orders were found', [])
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -118,7 +118,7 @@ def modify_transaction_status(payload, headers):
         if order:
             return MessageService.generate_success_message('', order.to_dictionary())
         else:
-            return MessageService.generate_custom_message('the order could not be updated', 200, {})
+            return MessageService.generate_custom_message('the order could not be updated', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
