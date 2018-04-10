@@ -3,72 +3,103 @@ from services.UserService import is_user_admin
 import services.AuthService as AuthService
 import services.MessageService as MessageService
 from dao.GameDao import create_game, retrieve_game, get_games, update_game, delete_game
-from beans.GameBean import Game
 
 
 def add_game(payload, headers):
-    auth = AuthService.get_user_email_from_token(headers)
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_failed
 
-    if 'err' in auth.keys():
-        return auth
+    try:
+        if not is_user_admin(auth):
+            return MessageService.lack_of_privilege
 
-    if not is_user_admin(auth):
-        return MessageService.lack_of_privilege
+        if check_fields_existance_in_payload(payload, 'name', 'developer', 'publisher', 'price', 'description', 'image'):
+            game = create_game(payload)
 
-    if check_fields_existance_in_payload(payload, 'name', 'developer', 'publisher', 'price', 'description'):
-        return __game_to_json(create_game(payload))
-    else:
-        return MessageService.missing_fields_request
+            if game:
+                return MessageService.generate_success_message('', game.to_dictionary())
+            else:
+                return MessageService.generate_custom_message('The game could not be created', 500)
+        else:
+            return MessageService.missing_fields_request
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def get_game(name):
-    return __game_to_json(retrieve_game(name))
+    try:
+        game = retrieve_game(name)
+        if game:
+            return MessageService.generate_success_message('', game.to_dictionary())
+        else:
+            return MessageService.generate_custom_message('The game was not found', 200, {})
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def get_all_games():
-    result = get_games()
-    response = []
-    for game in result:
-        response.append(__game_to_json(game))
+    try:
+        result = get_games()
+        games = []
+        for game in result:
+            games.append(game.to_dictionary())
 
-    return response
+        if len(games):
+            return MessageService.generate_success_message('', games)
+        else:
+            return MessageService.generate_custom_message('No games were found', 200, [])
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def modify_game(payload, headers):
-    auth = AuthService.get_user_email_from_token(headers)
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_failed
 
-    if 'err' in auth.keys():
-        return auth
+    try:
+        if not is_user_admin(auth):
+            return MessageService.lack_of_privilege
 
-    if not is_user_admin(auth):
-        return MessageService.lack_of_privilege
+        if check_fields_existance_in_payload(payload, 'id', 'name', 'developer', 'publisher', 'description', 'price'):
+            game = update_game(payload)
 
-    if check_fields_existance_in_payload(payload, 'id', 'name', 'developer', 'publisher', 'description', 'price'):
-        return __game_to_json(update_game(payload))
-    else:
-        return MessageService.missing_fields_request
+            if game:
+                return MessageService.generate_success_message('', game.to_dictionary())
+            else:
+                return MessageService.generate_custom_message('No game with that id was found', 200, {})
+        else:
+            return MessageService.missing_fields_request
+
+    except Exception as e:
+        MessageService.generate_internal_server_error(e)
 
 
 def remove_game(payload, headers):
-    auth = AuthService.get_user_email_from_token(headers)
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_failed
 
-    if 'err' in auth.keys():
-        return auth
+    try:
+        if not is_user_admin(auth):
+            return MessageService.lack_of_privilege
 
-    if not is_user_admin(auth):
-        return MessageService.lack_of_privilege
+        if check_fields_existance_in_payload(payload, 'id'):
+            game = delete_game(payload['id'])
 
-    if check_fields_existance_in_payload(payload, 'id'):
-        return __game_to_json(delete_game(payload['id']))
-    else:
-        return MessageService.missing_fields_request
+            if game:
+                return MessageService.generate_success_message('', game.to_dictionary())
+            else:
+                return MessageService.generate_custom_message('The game could not be removed', 200, {})
+        else:
+            return MessageService.missing_fields_request
 
-
-def __game_to_json(game):
-    if type(game) is Game:
-        return game.to_dictionary()
-    else:
-        return game
-
-
-
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)

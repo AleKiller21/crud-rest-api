@@ -1,98 +1,132 @@
 from services.UtilService import check_fields_existance_in_payload
-from services.MessageService import missing_fields_request, lack_of_privilege
+import services.MessageService as MessageService
+import dao.TransactionDao as TransactionDao
 from services.UserService import is_user_admin
-from dao.TransactionDao import create_order, retrieve_transactions_by_game_id, retrieve_transaction_by_order_number, \
-    retrieve_transactions_by_user_email, get_transactions, update_transaction
-from beans.TransactionBean import Transaction
 import services.AuthService as AuthService
 
 
 def add_order(payload):
-    if check_fields_existance_in_payload(payload, 'user_id', 'game_id', 'total'):
-        result = create_order(payload)
-        if 'err' in result.keys():
-            return result
+    try:
+        if check_fields_existance_in_payload(payload, 'user_id', 'game_id', 'total'):
+            order = TransactionDao.create_order(payload)
+
+            if order:
+                return MessageService.generate_success_message('', order.to_dictionary())
+            else:
+                return MessageService.generate_custom_message('The order could not be created', 500, {})
         else:
-            return __transaction_to_json(result)
-    else:
-        return missing_fields_request
+            return MessageService.missing_fields_request
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def get_transaction_by_order_number(order_number, headers):
-    auth = AuthService.get_user_email_from_token(headers)
-
-    if 'err' in auth.keys():
-        return auth
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_failed
 
     if not is_user_admin(auth):
-        return lack_of_privilege
+        return MessageService.lack_of_privilege
 
-    return __transaction_to_json(retrieve_transaction_by_order_number(order_number))
+    try:
+        order = TransactionDao.retrieve_transaction_by_order_number(order_number)
+        if order:
+            return MessageService.generate_success_message('', order.to_dictionary())
+        else:
+            return MessageService.generate_custom_message('No order with that order number could be found', 204, {})
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def get_transactions_by_user_id(headers):
-    auth = AuthService.get_user_email_from_token(headers)
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
 
-    if 'err' in auth.keys():
-        return auth
+    except Exception:
+        return MessageService.authentication_failed
 
-    transactions = retrieve_transactions_by_user_email(auth['email'])
-    if not len(transactions):
-        return {'message': 'No orders were found'}
+    try:
+        transactions = TransactionDao.retrieve_transactions_by_user_email(auth['email'])
+        if not len(transactions):
+            return MessageService.generate_custom_message('No orders were found', 204, [])
 
-    return process_transactions_projection(transactions)
+        return MessageService.generate_success_message('', process_transactions_projection(transactions))
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def get_transactions_by_game_id(game_id, headers):
-    auth = AuthService.get_user_email_from_token(headers)
-
-    if 'err' in auth.keys():
-        return auth
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_failed
 
     if not is_user_admin(auth):
-        return lack_of_privilege
+        return MessageService.lack_of_privilege
 
-    return process_transactions_projection(retrieve_transactions_by_game_id(game_id))
+    try:
+        orders = TransactionDao.retrieve_transactions_by_game_id(game_id)
+
+        if len(orders):
+            return MessageService.generate_success_message('', process_transactions_projection())
+        else:
+            return MessageService.generate_custom_message('No orders were found', 200, [])
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def get_all_transactions(headers):
-    auth = AuthService.get_user_email_from_token(headers)
-
-    if 'err' in auth.keys():
-        return auth
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_failed
 
     if not is_user_admin(auth):
-        return lack_of_privilege
+        return MessageService.lack_of_privilege
 
-    result = get_transactions()
-    return process_transactions_projection(result)
+    try:
+        orders = TransactionDao.get_transactions()
+
+        if len(orders):
+            return MessageService.generate_success_message('', process_transactions_projection())
+        else:
+            return MessageService.generate_custom_message('No orders were found', 200, [])
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def modify_transaction_status(payload, headers):
-    auth = AuthService.get_user_email_from_token(headers)
-
-    if 'err' in auth.keys():
-        return auth
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_failed
 
     if not is_user_admin(auth):
-        return lack_of_privilege
+        return MessageService.lack_of_privilege
 
-    if check_fields_existance_in_payload(payload, 'status', 'order_number'):
-        return __transaction_to_json(update_transaction(payload))
-    else:
-        return missing_fields_request
+    if not check_fields_existance_in_payload(payload, 'status', 'order_number'):
+        return MessageService.missing_fields_request
+
+    try:
+        order = TransactionDao.update_transaction(payload)
+        if order:
+            return MessageService.generate_success_message('', order.to_dictionary())
+        else:
+            return MessageService.generate_custom_message('the order could not be updated', 200, {})
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
 
 
 def process_transactions_projection(dao_result):
     response = []
     for transaction in dao_result:
-        response.append(__transaction_to_json(transaction))
+        response.append(transaction.to_dictionary())
 
     return response
-
-
-def __transaction_to_json(order):
-    if type(order) is Transaction:
-        return order.to_dictionary()
-    else:
-        return order

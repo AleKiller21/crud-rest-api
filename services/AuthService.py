@@ -1,5 +1,4 @@
 import base64
-import services.MessageService as MessageService
 
 
 def to_base64(email, password):
@@ -17,29 +16,20 @@ def extract_token_from_header(header):
 
 def get_user_email_from_token(headers):
     if not check_token_existance(headers):
-        return MessageService.authentication_failed
+        raise Exception('You must login')
 
     token = extract_token_from_header(headers['Authorization'])
-    auth = __authenticate(token)
-
-    if 'err' in auth.keys():
-        return {'err': 'session has expired. Please login again'}
-
-    return auth
+    return __authenticate(token)
 
 
 def __authenticate(token):
-    try:
-        result = base64.b64decode(token).decode('utf-8')
-        index = result.find(':')
+    result = base64.b64decode(token).decode('utf-8')
+    index = result.find(':')
 
-        if not index:
-            raise Exception('authentication failed')
+    if not index:
+        raise Exception('session has expired. Please login again')
 
-        email = result[:index]
-        password = result[index + 1:]
-        return {'email': email, 'password': password}
+    email = result[:index]
+    password = result[index + 1:]
 
-    except Exception as e:
-        print(e)
-        return {'err': e}
+    return {'email': email, 'password': password}

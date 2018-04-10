@@ -7,13 +7,11 @@ def create_user(payload):
     password, role)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
 
-    result = DbService.execute(query, 'c', payload['first_name'], payload['last_name'], payload['email'],
-                               payload['address'], payload['gamertag'], payload['profile_picture'], payload['password'],
-                               payload['role'])
-    if result:
-        return retrieve_user(payload['gamertag'])
-    else:
-        return {'err': 'The user could not be created'}
+    DbService.execute(query, 'c', payload['first_name'], payload['last_name'], payload['email'],
+                      payload['address'], payload['gamertag'], payload['profile_picture'], payload['password'],
+                      payload['role'])
+
+    return retrieve_user(payload['gamertag'])
 
 
 def retrieve_user(gamertag):
@@ -26,7 +24,7 @@ def retrieve_user(gamertag):
         result = result[0]
         return User(result)
     else:
-        return {'message': "No user was found with that gamertag"}
+        return None
 
 
 def get_users():
@@ -54,7 +52,7 @@ def update_user(payload):
                                       payload['gamertag'], payload['address'], payload['profile_picture'],
                                       payload['id'])
     if not rows_affected:
-        return {'message': 'No users were affected'}
+        return None
 
     else:
         return __retrieve_user_by_id(payload['id'])
@@ -64,7 +62,7 @@ def delete_user(id):
     query = """DELETE FROM User WHERE id = %s;"""
     response = __retrieve_user_by_id(id)
 
-    if (not type(response) is User) and 'err' in response.keys():
+    if not response:
         return response
 
     result = DbService.execute(query, 'd', id)
@@ -72,7 +70,7 @@ def delete_user(id):
     if result:
         return response
     else:
-        return {'message': 'No users with were affected'}
+        return None
 
 
 def login_user(payload):
@@ -84,13 +82,16 @@ def login_user(payload):
         payload['gamertag'] = result[0][2]
         return payload
     else:
-        return {'err': "No user was found with those credentials"}
+        return None
 
 
 def get_user_role_gamertag(email):
     query = 'SELECT role, gamertag FROM User WHERE email = %s;'
 
     result = DbService.execute(query, 'r', email)[0]
+
+    if not len(result):
+        return None
 
     return {
         'role': result[0],
@@ -108,12 +109,11 @@ def __retrieve_user_by_id(id):
         return User(result[0])
 
     else:
-        return {'err': 'No user with that id exists'}
+        return None
 
 
-def check_email_gamertag_duplication(id, email, gamertag,):
+def check_email_gamertag_duplication(id, email, gamertag):
     query = """SELECT email, gamertag FROM USER WHERE (email = %s OR gamertag = %s) AND id != %s"""
 
     result = DbService.execute(query, 'r', email, gamertag, id)
     return len(result)
-

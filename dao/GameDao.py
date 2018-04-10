@@ -6,12 +6,10 @@ def create_game(payload):
     query = """INSERT INTO Game (name, developer, publisher, price, description, image)
                 VALUES (%s, %s, %s, %s, %s, %s);"""
 
-    result = DbService.execute(query, 'c', payload['name'], payload['developer'], payload['publisher'],
-                               payload['price'], payload['description'], payload['image'])
-    if result:
-        return retrieve_game(payload['name'])
-    else:
-        return {'err': 'The game could not be created'}
+    DbService.execute(query, 'c', payload['name'], payload['developer'], payload['publisher'],
+                      payload['price'], payload['description'], payload['image'])
+
+    return retrieve_game(payload['name'])
 
 
 def retrieve_game(name):
@@ -24,7 +22,7 @@ def retrieve_game(name):
         result = result[0]
         return Game(result)
     else:
-        return {'message': "No game was found with that name"}
+        return None
 
 
 def get_games():
@@ -51,7 +49,7 @@ def update_game(payload):
     rows_affected = DbService.execute(query, 'u', payload['name'], payload['developer'], payload['publisher'],
                                       payload['price'], payload['description'], payload['image'], payload['id'])
     if not rows_affected:
-        return {'message': 'No games were affected'}
+        return None
 
     else:
         return __retrieve_game_by_id(payload['id'])
@@ -61,7 +59,7 @@ def delete_game(id):
     query = """DELETE FROM Game WHERE id = %s;"""
     response = __retrieve_game_by_id(id)
 
-    if (not type(response) is Game) and 'err' in response.keys():
+    if not response:
         return response
 
     result = DbService.execute(query, 'd', id)
@@ -69,7 +67,7 @@ def delete_game(id):
     if result:
         return response
     else:
-        return {'message': 'No games with were affected'}
+        return None
 
 
 def __retrieve_game_by_id(id):
@@ -82,4 +80,4 @@ def __retrieve_game_by_id(id):
         return Game(result[0])
 
     else:
-        return {'err': 'No game with that id exists'}
+        return None

@@ -28,4 +28,4 @@ class DbService:
         except Exception as e:
             DbService.db.rollback()
             print(e)
-            return {'err': 'An error has ocurred in the database operation'}
+            raise Exception('An error has ocurred. Please try again later')
