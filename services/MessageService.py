@@ -1,7 +1,9 @@
 
 missing_fields_request = {'message': 'Missing fields in request', 'code': 400}
 
-authentication_failed = {'message': 'You must log in', 'code': 401}
+authentication_required = {'message': 'You must log in', 'code': 401}
+
+authentication_failed = {'message': 'Login credentials are wrong', 'code': 401}
 
 lack_of_privilege = {'message': 'You do not have the privileges to carry on this action', 'code': 403}
 

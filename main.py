@@ -13,8 +13,10 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
 
-    print(response.response[0].decode('utf-8'))
-    response.status = str(json.loads(response.response[0].decode('utf-8'))['code'])
+    print(response.response)
+    if len(response.response):
+        print(response.response[0].decode('utf-8'))
+        response.status = str(json.loads(response.response[0].decode('utf-8'))['code'])
 
     return response
 
@@ -44,6 +46,12 @@ def update_user():
 @app.route('/user/delete', methods=['POST'])
 def delete_user():
     return set_headers(json.dumps(userService.remove_user(request.json, request.headers)),
+                       {'Content-Type': 'application/json'})
+
+
+@app.route('/user/isadmin', methods=['GET'])
+def is_admin():
+    return set_headers(json.dumps(userService.is_admin(request.headers)),
                        {'Content-Type': 'application/json'})
 
 

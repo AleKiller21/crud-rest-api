@@ -9,7 +9,7 @@ def add_game(payload, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         if not is_user_admin(auth):
@@ -61,7 +61,7 @@ def modify_game(payload, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         if not is_user_admin(auth):
@@ -85,7 +85,7 @@ def remove_game(payload, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         if not is_user_admin(auth):

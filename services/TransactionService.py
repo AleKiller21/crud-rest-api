@@ -25,7 +25,7 @@ def get_transaction_by_order_number(order_number, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     if not is_user_admin(auth):
         return MessageService.lack_of_privilege
@@ -46,7 +46,7 @@ def get_transactions_by_user_id(headers):
         auth = AuthService.get_user_email_from_token(headers)
 
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         transactions = TransactionDao.retrieve_transactions_by_user_email(auth['email'])
@@ -63,7 +63,7 @@ def get_transactions_by_game_id(game_id, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     if not is_user_admin(auth):
         return MessageService.lack_of_privilege
@@ -84,7 +84,7 @@ def get_all_transactions(headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     if not is_user_admin(auth):
         return MessageService.lack_of_privilege
@@ -105,7 +105,7 @@ def modify_transaction_status(payload, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     if not is_user_admin(auth):
         return MessageService.lack_of_privilege

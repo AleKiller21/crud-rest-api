@@ -27,7 +27,7 @@ def get_user(gamertag, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         result = UserDao.get_user_role_gamertag(auth['email'])
@@ -52,7 +52,7 @@ def get_all_users(headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         if not is_user_admin(auth):
@@ -76,7 +76,7 @@ def modify_user(payload, headers):
     try:
         AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         result = UserDao.check_email_gamertag_duplication(payload['id'], payload['email'], payload['gamertag'])
@@ -102,7 +102,7 @@ def remove_user(payload, headers):
     try:
         auth = AuthService.get_user_email_from_token(headers)
     except Exception:
-        return MessageService.authentication_failed
+        return MessageService.authentication_required
 
     try:
         if not is_user_admin(auth):
@@ -130,7 +130,7 @@ def login(payload):
         result = UserDao.login_user(payload)
 
         if not result:
-            return MessageService.generate_custom_message('No user was found with those credentials', 401)
+            return MessageService.authentication_failed
 
         data = {
             'token': 'Basic ' + AuthService.to_base64(payload['email'], payload['password']).decode('utf-8'),
@@ -138,6 +138,24 @@ def login(payload):
         }
 
         return MessageService.generate_success_message('', data)
+
+    except Exception as e:
+        return MessageService.generate_internal_server_error(e)
+
+
+def is_admin(headers):
+    print('entro')
+    try:
+        auth = AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_required
+
+    try:
+        result = is_user_admin(auth)
+        if result:
+            return MessageService.generate_success_message('', {'admin': True})
+        else:
+            return MessageService.generate_success_message('', {'admin': False})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
