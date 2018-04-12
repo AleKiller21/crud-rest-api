@@ -14,8 +14,8 @@ def generate_success_message(message, data):
     return {'message': message, 'data': data, 'code': 200}
 
 
-def generate_internal_server_error(message):
-    return {'message': message, 'code': 500}
+def generate_internal_server_error(exception):
+    return {'message': str(exception), 'code': 500}
 
 
 def generate_custom_message(message, data):

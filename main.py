@@ -13,9 +13,7 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
 
-    print(response.response)
     if len(response.response):
-        print(response.response[0].decode('utf-8'))
         response.status = str(json.loads(response.response[0].decode('utf-8'))['code'])
 
     return response
