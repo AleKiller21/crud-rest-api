@@ -58,7 +58,7 @@ def get_transactions_by_user_id(headers):
         if not len(transactions):
             return MessageService.generate_custom_message('No orders were found', 204, [])
 
-        return MessageService.generate_success_message('', process_transactions_projection(transactions))
+        return MessageService.generate_success_message('', transactions)
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)

@@ -9,24 +9,10 @@ def create_order(payload):
 
 
 def get_transactions():
-    orders = []
     query = """SELECT * FROM Transaction;"""
     rows = DbService.execute(query, 'r')
 
-    print(rows)
-    for row in rows:
-        user_query = """SELECT gamertag FROM User WHERE id = %s"""
-        game_query = """SELECT name FROM Game WHERE id = %s"""
-        user = DbService.execute(user_query, 'r', row[1])
-        game = DbService.execute(game_query, 'r', row[2])
-
-        order = Transaction(row).to_dictionary()
-        order['gamertag'] = user[0][0]
-        order['game_name'] = game[0][0]
-        orders.append(order)
-
-    print(orders)
-    return orders
+    return __get_personalized_transactions(rows)
 
 
 def update_transaction(payload):
@@ -52,8 +38,9 @@ def retrieve_transactions_by_user_email(email):
                         WHERE user_id = %s;"""
 
     id_result = DbService.execute(get_id_query, 'r', email)[0][0]
-    transactions_query = DbService.execute(transactions_query, 'r', id_result)
-    return __process_multiple_transactions_result(transactions_query)
+    rows = DbService.execute(transactions_query, 'r', id_result)
+
+    return __get_personalized_transactions(rows)
 
 
 def retrieve_transactions_by_game_id(game_id):
@@ -85,3 +72,22 @@ def __process_multiple_transactions_result(dao_result):
         response.append(Transaction(row))
 
     return response
+
+
+def __get_personalized_transactions(order_rows):
+    orders = []
+
+    print(order_rows)
+    for row in order_rows:
+        user_query = """SELECT gamertag FROM User WHERE id = %s"""
+        game_query = """SELECT name FROM Game WHERE id = %s"""
+        user = DbService.execute(user_query, 'r', row[1])
+        game = DbService.execute(game_query, 'r', row[2])
+
+        order = Transaction(row).to_dictionary()
+        order['gamertag'] = user[0][0]
+        order['game_name'] = game[0][0]
+        orders.append(order)
+
+    print(orders)
+    return orders
