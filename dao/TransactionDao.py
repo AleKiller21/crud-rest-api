@@ -9,10 +9,24 @@ def create_order(payload):
 
 
 def get_transactions():
+    orders = []
     query = """SELECT * FROM Transaction;"""
-    result = DbService.execute(query, 'r')
+    rows = DbService.execute(query, 'r')
 
-    return __process_multiple_transactions_result(result)
+    print(rows)
+    for row in rows:
+        user_query = """SELECT gamertag FROM User WHERE id = %s"""
+        game_query = """SELECT name FROM Game WHERE id = %s"""
+        user = DbService.execute(user_query, 'r', row[1])
+        game = DbService.execute(game_query, 'r', row[2])
+
+        order = Transaction(row).to_dictionary()
+        order['gamertag'] = user[0][0]
+        order['game_name'] = game[0][0]
+        orders.append(order)
+
+    print(orders)
+    return orders
 
 
 def update_transaction(payload):

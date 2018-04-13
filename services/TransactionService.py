@@ -98,7 +98,7 @@ def get_all_transactions(headers):
         orders = TransactionDao.get_transactions()
 
         if len(orders):
-            return MessageService.generate_success_message('', process_transactions_projection(orders))
+            return MessageService.generate_success_message('', orders)
         else:
             return MessageService.generate_custom_message('No orders were found', [])
 
