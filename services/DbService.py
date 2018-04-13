@@ -9,7 +9,7 @@ class DbService:
     @staticmethod
     def execute(query, operation, *params):
         if not DbService.db:
-            DbService.db = connect(host='localhost', user='root', password='sandals', database='cruddemo')
+            DbService.db = connect(host='localhost', user='root', password='ajfz1995', database='cruddemo')
 
         cursor = DbService.db.cursor()
 

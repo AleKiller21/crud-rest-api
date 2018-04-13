@@ -83,7 +83,8 @@ def delete_game():
 
 @app.route('/order/add', methods=['POST'])
 def add_order():
-    return set_headers(json.dumps(transactionService.add_order(request.json)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(transactionService.add_order(request.json, request.headers)),
+                       {'Content-Type': 'application/json'})
 
 
 @app.route('/order/<int:order_number>')

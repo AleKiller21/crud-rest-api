@@ -5,13 +5,18 @@ from services.UserService import is_user_admin
 import services.AuthService as AuthService
 
 
-def add_order(payload):
+def add_order(payload, headers):
+    try:
+        AuthService.get_user_email_from_token(headers)
+    except Exception:
+        return MessageService.authentication_required
+
     try:
         if check_fields_existance_in_payload(payload, 'user_id', 'game_id', 'total'):
             order = TransactionDao.create_order(payload)
 
             if order:
-                return MessageService.generate_success_message('', order.to_dictionary())
+                return MessageService.generate_success_message('success', {})
             else:
                 return MessageService.generate_custom_message('The order could not be created', 500, {})
         else:
