@@ -1,4 +1,5 @@
 import jwt
+import datetime
 from dao.UserDao import get_user_role
 import services.MessageService as MessageService
 
@@ -6,6 +7,7 @@ key = 'SanServices01$'
 
 
 def generate_token(payload):
+    payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(minutes=20)
     return jwt.encode(payload, key, algorithm='HS256').decode('utf-8')
 
 
