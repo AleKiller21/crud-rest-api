@@ -28,18 +28,12 @@ def update_transaction(payload):
         return retrieve_transaction_by_order_number(payload['order_number'])
 
 
-def retrieve_transactions_by_user_email(email):
-    get_id_query = """SELECT id
-                    FROM User
-                    WHERE email = %s;"""
-
+def retrieve_transactions_by_user_email(id):
     transactions_query = """SELECT *
                         FROM Transaction
                         WHERE user_id = %s;"""
 
-    id_result = DbService.execute(get_id_query, 'r', email)[0][0]
-    rows = DbService.execute(transactions_query, 'r', id_result)
-
+    rows = DbService.execute(transactions_query, 'r', id)
     return __get_personalized_transactions(rows)
 
 

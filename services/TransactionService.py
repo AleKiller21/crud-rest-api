@@ -1,16 +1,9 @@
 from services.UtilService import check_fields_existance_in_payload
 import services.MessageService as MessageService
 import dao.TransactionDao as TransactionDao
-from services.UserService import is_user_admin
-import services.AuthService as AuthService
 
 
-def add_order(payload, headers):
-    try:
-        AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
+def add_order(payload):
     try:
         if check_fields_existance_in_payload(payload, 'user_id', 'game_id', 'total'):
             order = TransactionDao.create_order(payload)
@@ -26,37 +19,23 @@ def add_order(payload, headers):
         return MessageService.generate_internal_server_error(e)
 
 
-def get_transaction_by_order_number(order_number, headers):
-    try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    if not is_user_admin(auth):
-        return MessageService.lack_of_privilege
-
+def get_transaction_by_order_number(order_number):
     try:
         order = TransactionDao.retrieve_transaction_by_order_number(order_number)
         if order:
             return MessageService.generate_success_message('', order.to_dictionary())
         else:
-            return MessageService.generate_custom_message('No order with that order number could be found', 204, {})
+            return MessageService.generate_custom_message('No order with that order number could be found', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
 
 
-def get_transactions_by_user_id(headers):
+def get_transactions_by_user_id(id):
     try:
-        auth = AuthService.get_user_email_from_token(headers)
-
-    except Exception:
-        return MessageService.authentication_required
-
-    try:
-        transactions = TransactionDao.retrieve_transactions_by_user_email(auth['email'])
+        transactions = TransactionDao.retrieve_transactions_by_user_email(id)
         if not len(transactions):
-            return MessageService.generate_custom_message('No orders were found', 204, [])
+            return MessageService.generate_custom_message('No orders were found', [])
 
         return MessageService.generate_success_message('', transactions)
 
@@ -64,15 +43,7 @@ def get_transactions_by_user_id(headers):
         return MessageService.generate_internal_server_error(e)
 
 
-def get_transactions_by_game_id(game_id, headers):
-    try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    if not is_user_admin(auth):
-        return MessageService.lack_of_privilege
-
+def get_transactions_by_game_id(game_id):
     try:
         orders = TransactionDao.retrieve_transactions_by_game_id(game_id)
 
@@ -85,15 +56,7 @@ def get_transactions_by_game_id(game_id, headers):
         return MessageService.generate_internal_server_error(e)
 
 
-def get_all_transactions(headers):
-    try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    if not is_user_admin(auth):
-        return MessageService.lack_of_privilege
-
+def get_all_transactions():
     try:
         orders = TransactionDao.get_transactions()
 
@@ -106,15 +69,7 @@ def get_all_transactions(headers):
         return MessageService.generate_internal_server_error(e)
 
 
-def modify_transaction_status(payload, headers):
-    try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    if not is_user_admin(auth):
-        return MessageService.lack_of_privilege
-
+def modify_transaction_status(payload):
     if not check_fields_existance_in_payload(payload, 'status', 'order_number'):
         return MessageService.missing_fields_request
 

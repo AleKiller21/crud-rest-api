@@ -3,8 +3,16 @@ import services.UserService as userService
 import services.GameService as gameService
 import services.TransactionService as transactionService
 from services.ResponseService import set_headers
+from services.AuthService import authenticate
 
 app = Flask(__name__)
+
+
+@app.before_request
+def before_request():
+    result = authenticate(request.endpoint, request.headers)
+    if result['code'] != 200:
+        return set_headers(json.dumps(result), {'Content-Type': 'application/json'})
 
 
 @app.after_request
@@ -26,36 +34,30 @@ def add_user():
 
 @app.route('/user/<gamertag>')
 def get_user(gamertag):
-    return set_headers(json.dumps(userService.get_user(gamertag, request.headers)),
+    return set_headers(json.dumps(userService.get_user(gamertag, request.headers['Authorization'])),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/users')
 def get_users():
-    return set_headers(json.dumps(userService.get_all_users(request.headers)), {'Content-Type': 'application/json'})
+    return set_headers(json.dumps(userService.get_all_users()), {'Content-Type': 'application/json'})
 
 
 @app.route('/user/update', methods=['POST'])
 def update_user():
-    return set_headers(json.dumps(userService.modify_user(request.json, request.headers)),
+    return set_headers(json.dumps(userService.modify_user(request.json)),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/user/delete', methods=['POST'])
 def delete_user():
-    return set_headers(json.dumps(userService.remove_user(request.json, request.headers)),
-                       {'Content-Type': 'application/json'})
-
-
-@app.route('/user/isadmin', methods=['GET'])
-def is_admin():
-    return set_headers(json.dumps(userService.is_admin(request.headers)),
+    return set_headers(json.dumps(userService.remove_user(request.json)),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/game/add', methods=['POST'])
 def add_game():
-    return set_headers(json.dumps(gameService.add_game(request.json, request.headers)),
+    return set_headers(json.dumps(gameService.add_game(request.json)),
                        {'Content-Type': 'application/json'})
 
 
@@ -71,49 +73,49 @@ def get_games():
 
 @app.route('/game/update', methods=['POST'])
 def update_game():
-    return set_headers(json.dumps(gameService.modify_game(request.json, request.headers)),
+    return set_headers(json.dumps(gameService.modify_game(request.json)),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/game/delete', methods=['POST'])
 def delete_game():
-    return set_headers(json.dumps(gameService.remove_game(request.json, request.headers)),
+    return set_headers(json.dumps(gameService.remove_game(request.json)),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/order/add', methods=['POST'])
 def add_order():
-    return set_headers(json.dumps(transactionService.add_order(request.json, request.headers)),
+    return set_headers(json.dumps(transactionService.add_order(request.json)),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/order/<int:order_number>')
 def get_order_by_order_number(order_number):
-    return set_headers(json.dumps(transactionService.get_transaction_by_order_number(order_number, request.headers)),
+    return set_headers(json.dumps(transactionService.get_transaction_by_order_number(order_number)),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/orders/game/<int:game_id>')
 def get_order_by_game_id(game_id):
-    return set_headers(json.dumps(transactionService.get_transactions_by_game_id(game_id, request.headers)),
+    return set_headers(json.dumps(transactionService.get_transactions_by_game_id(game_id)),
                        {'Content-Type': 'application/json'})
 
 
-@app.route('/orders/user')
-def get_order_by_user_id():
-    return set_headers(json.dumps(transactionService.get_transactions_by_user_id(request.headers)),
+@app.route('/orders/user/<int:id>')
+def get_order_by_user_id(id):
+    return set_headers(json.dumps(transactionService.get_transactions_by_user_id(id)),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/orders')
 def get_orders():
-    return set_headers(json.dumps(transactionService.get_all_transactions(request.headers)),
+    return set_headers(json.dumps(transactionService.get_all_transactions()),
                        {'Content-Type': 'application/json'})
 
 
 @app.route('/order/update', methods=['POST'])
 def update_order():
-    return set_headers(json.dumps(transactionService.modify_transaction_status(request.json, request.headers)),
+    return set_headers(json.dumps(transactionService.modify_transaction_status(request.json)),
                        {'Content-Type': 'application/json'})
 
 

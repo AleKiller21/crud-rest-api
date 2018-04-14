@@ -23,19 +23,14 @@ def add_user(payload):
         return MessageService.generate_internal_server_error(e)
 
 
-def get_user(gamertag, headers):
+def get_user(gamertag, token):
     try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
+        data = AuthService.decode_token(token)
 
-    try:
-        result = UserDao.get_user_role_gamertag(auth['email'])
-
-        if result['role'] == 'admin':
+        if data['role'] == 'admin':
             gamertag_to_look = gamertag
         else:
-            gamertag_to_look = result['gamertag']
+            gamertag_to_look = data['gamertag']
 
         data = UserDao.retrieve_user(gamertag_to_look)
 
@@ -48,16 +43,8 @@ def get_user(gamertag, headers):
         return MessageService.generate_internal_server_error(e)
 
 
-def get_all_users(headers):
+def get_all_users():
     try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    try:
-        if not is_user_admin(auth):
-            return MessageService.lack_of_privilege
-
         result = UserDao.get_users()
         response = []
         for user in result:
@@ -72,12 +59,7 @@ def get_all_users(headers):
         return MessageService.generate_internal_server_error(e)
 
 
-def modify_user(payload, headers):
-    try:
-        AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
+def modify_user(payload):
     try:
         result = UserDao.check_email_gamertag_duplication(payload['id'], payload['email'], payload['gamertag'])
 
@@ -98,16 +80,8 @@ def modify_user(payload, headers):
         return MessageService.generate_internal_server_error(e)
 
 
-def remove_user(payload, headers):
+def remove_user(payload):
     try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    try:
-        if not is_user_admin(auth):
-            return MessageService.lack_of_privilege
-
         if check_fields_existance_in_payload(payload, 'id'):
             user = UserDao.delete_user(payload['id'])
 
@@ -132,30 +106,10 @@ def login(payload):
         if not result:
             return MessageService.authentication_failed
 
-        data = {
-            'token': 'Basic ' + AuthService.to_base64(payload['email'], payload['password']).decode('utf-8'),
-            'gamertag': result['gamertag']
-        }
+        token = AuthService.generate_token(result)
+        data = {'token': 'Bearer ' + token}
 
         return MessageService.generate_success_message('', data)
-
-    except Exception as e:
-        return MessageService.generate_internal_server_error(e)
-
-
-def is_admin(headers):
-    print('entro')
-    try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    try:
-        result = is_user_admin(auth)
-        if result:
-            return MessageService.generate_success_message('', {'admin': True})
-        else:
-            return MessageService.generate_success_message('', {'admin': False})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -168,12 +122,3 @@ def __set_optional_fields(payload, *fields):
                 payload[field] = 'customer'
             else:
                 payload[field] = ''
-
-
-def is_user_admin(auth):
-    result = UserDao.get_user_role_gamertag(auth['email'])
-
-    if result:
-        return result['role'] == 'admin'
-    else:
-        return None

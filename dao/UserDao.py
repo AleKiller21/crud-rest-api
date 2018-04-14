@@ -74,28 +74,26 @@ def delete_user(id):
 
 
 def login_user(payload):
-    query = "SELECT email, password, gamertag FROM User WHERE email = %s AND password = %s;"
+    query = "SELECT id, role, gamertag FROM User WHERE email = %s AND password = %s;"
 
     result = DbService.execute(query, 'r', payload['email'], payload['password'])
 
     if len(result):
-        payload['gamertag'] = result[0][2]
-        return payload
+        return {'id': result[0][0], 'role': result[0][1], 'gamertag': result[0][2]}
     else:
         return None
 
 
-def get_user_role_gamertag(email):
-    query = 'SELECT role, gamertag FROM User WHERE email = %s;'
+def get_user_role(id):
+    query = 'SELECT role FROM User WHERE id = %s;'
 
-    result = DbService.execute(query, 'r', email)[0]
+    result = DbService.execute(query, 'r', id)[0]
 
     if not len(result):
         return None
 
     return {
-        'role': result[0],
-        'gamertag': result[1]
+        'role': result[0]
     }
 
 

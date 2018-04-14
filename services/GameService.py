@@ -1,20 +1,10 @@
 from services.UtilService import check_fields_existance_in_payload
-from services.UserService import is_user_admin
-import services.AuthService as AuthService
 import services.MessageService as MessageService
 from dao.GameDao import create_game, retrieve_game, get_games, update_game, delete_game
 
 
-def add_game(payload, headers):
+def add_game(payload):
     try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    try:
-        if not is_user_admin(auth):
-            return MessageService.lack_of_privilege
-
         if check_fields_existance_in_payload(payload, 'name', 'developer', 'publisher', 'price', 'description', 'image'):
             game = create_game(payload)
 
@@ -57,16 +47,8 @@ def get_all_games():
         return MessageService.generate_internal_server_error(e)
 
 
-def modify_game(payload, headers):
+def modify_game(payload):
     try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    try:
-        if not is_user_admin(auth):
-            return MessageService.lack_of_privilege
-
         if check_fields_existance_in_payload(payload, 'id', 'name', 'developer', 'publisher', 'description', 'price'):
             game = update_game(payload)
 
@@ -81,16 +63,8 @@ def modify_game(payload, headers):
         MessageService.generate_internal_server_error(e)
 
 
-def remove_game(payload, headers):
+def remove_game(payload):
     try:
-        auth = AuthService.get_user_email_from_token(headers)
-    except Exception:
-        return MessageService.authentication_required
-
-    try:
-        if not is_user_admin(auth):
-            return MessageService.lack_of_privilege
-
         if check_fields_existance_in_payload(payload, 'id'):
             game = delete_game(payload['id'])
 

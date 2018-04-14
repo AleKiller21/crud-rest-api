@@ -1,9 +1,12 @@
-import base64
+import jwt
+from dao.UserDao import get_user_role
+import services.MessageService as MessageService
+
+key = 'SanServices01$'
 
 
-def to_base64(email, password):
-    token = '%s:%s' % (email, password)
-    return base64.b64encode(token.encode('utf-8'))
+def generate_token(payload):
+    return jwt.encode(payload, key, algorithm='HS256').decode('utf-8')
 
 
 def check_token_existance(headers):
@@ -14,22 +17,44 @@ def extract_token_from_header(header):
     return header[header.find(' ') + 1:]
 
 
-def get_user_email_from_token(headers):
-    if not check_token_existance(headers):
-        raise Exception('You must login')
+def authenticate(endpoint, headers):
+    reestricted_endpoints = ['get_user', 'get_users', 'update_user', 'delete_user', 'add_game', 'update_game',
+                             'delete_game', 'add_order', 'get_order_by_order_number', 'get_order_by_game_id',
+                             'get_order_by_user_id', 'get_orders', 'update_order']
 
-    token = extract_token_from_header(headers['Authorization'])
-    return __authenticate(token)
+    admin_endpoints = ['get_users', 'delete_user', 'add_game', 'update_game', 'delete_game',
+                       'get_order_by_order_number', 'get_order_by_game_id', 'get_orders', 'update_order']
+
+    if endpoint not in reestricted_endpoints:
+        return MessageService.generate_success_message('', {})
+
+    try:
+        token = extract_token_from_header(headers['Authorization'])
+        data = decode_token(token)
+
+        if endpoint in admin_endpoints:
+            is_admin = __is_user_admin(data['id'])
+            if not is_admin:
+                return MessageService.lack_of_privilege
+
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, KeyError):
+        return MessageService.authentication_required
+
+    except Exception:
+        return MessageService.generate_internal_server_error('An error has ocurred')
+
+    return MessageService.generate_success_message('', {})
 
 
-def __authenticate(token):
-    result = base64.b64decode(token).decode('utf-8')
-    index = result.find(':')
+def decode_token(token):
+    result = extract_token_from_header(token)
+    return jwt.decode(result, key, algorithms=['HS256'])
 
-    if not index:
-        raise Exception('session has expired. Please login again')
 
-    email = result[:index]
-    password = result[index + 1:]
+def __is_user_admin(id):
+    result = get_user_role(id)
 
-    return {'email': email, 'password': password}
+    if result:
+        return result['role'] == 'admin'
+    else:
+        return None
