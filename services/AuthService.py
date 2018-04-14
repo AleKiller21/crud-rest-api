@@ -22,7 +22,7 @@ def extract_token_from_header(header):
 def authenticate(endpoint, headers):
     reestricted_endpoints = ['get_user', 'get_users', 'update_user', 'delete_user', 'add_game', 'update_game',
                              'delete_game', 'add_order', 'get_order_by_order_number', 'get_order_by_game_id',
-                             'get_order_by_user_id', 'get_orders', 'update_order']
+                             'get_order_by_user', 'get_orders', 'update_order']
 
     admin_endpoints = ['get_users', 'delete_user', 'add_game', 'update_game', 'delete_game',
                        'get_order_by_order_number', 'get_order_by_game_id', 'get_orders', 'update_order']

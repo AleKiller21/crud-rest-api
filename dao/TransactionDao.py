@@ -28,7 +28,7 @@ def update_transaction(payload):
         return retrieve_transaction_by_order_number(payload['order_number'])
 
 
-def retrieve_transactions_by_user_email(id):
+def retrieve_transactions_by_user(id):
     transactions_query = """SELECT *
                         FROM Transaction
                         WHERE user_id = %s;"""

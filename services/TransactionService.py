@@ -1,6 +1,7 @@
 from services.UtilService import check_fields_existance_in_payload
 import services.MessageService as MessageService
 import dao.TransactionDao as TransactionDao
+import services.AuthService as AuthService
 
 
 def add_order(payload):
@@ -31,9 +32,10 @@ def get_transaction_by_order_number(order_number):
         return MessageService.generate_internal_server_error(e)
 
 
-def get_transactions_by_user_id(id):
+def get_transactions_by_user(token):
     try:
-        transactions = TransactionDao.retrieve_transactions_by_user_email(id)
+        user_data = AuthService.decode_token(token)
+        transactions = TransactionDao.retrieve_transactions_by_user(user_data['id'])
         if not len(transactions):
             return MessageService.generate_custom_message('No orders were found', [])
 
