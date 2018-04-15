@@ -111,7 +111,7 @@ def __retrieve_user_by_id(id):
 
 
 def check_email_gamertag_duplication(id, email, gamertag):
-    query = """SELECT email, gamertag FROM USER WHERE (email = %s OR gamertag = %s) AND id != %s"""
+    query = """SELECT email, gamertag FROM User WHERE (email = %s OR gamertag = %s) AND id != %s"""
 
     result = DbService.execute(query, 'r', email, gamertag, id)
     return len(result)

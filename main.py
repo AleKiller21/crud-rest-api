@@ -10,6 +10,13 @@ app = Flask(__name__)
 
 @app.before_request
 def before_request():
+    if request.method == 'OPTIONS':
+        print(request.headers)
+        if 'Access-Control-Request-Headers' in request.headers:
+            if request.headers['Access-Control-Request-Headers'] == 'authorization':
+                print(request.headers['Access-Control-Request-Headers'])
+                return set_headers({}, {})
+
     result = authenticate(request.endpoint, request.headers)
     if result['code'] != 200:
         return set_headers(json.dumps(result), {'Content-Type': 'application/json'})
