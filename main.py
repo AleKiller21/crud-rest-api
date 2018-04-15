@@ -13,7 +13,7 @@ def before_request():
     if request.method == 'OPTIONS':
         print(request.headers)
         if 'Access-Control-Request-Headers' in request.headers:
-            if request.headers['Access-Control-Request-Headers'] == 'authorization':
+            if 'authorization' in request.headers['Access-Control-Request-Headers'].split(','):
                 print(request.headers['Access-Control-Request-Headers'])
                 return set_headers({}, {})
 
