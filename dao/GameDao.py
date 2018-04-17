@@ -25,10 +25,15 @@ def retrieve_game(name):
         return None
 
 
-def get_games():
-    query = """SELECT * FROM Game;"""
+def get_games(name):
+    if len(name):
+        search = '%' + name + '%'
+        query = """SELECT * FROM Game WHERE name LIKE %s;"""
+        result = DbService.execute(query, 'r', search)
+    else:
+        query = """SELECT * FROM Game;"""
+        result = DbService.execute(query, 'r')
 
-    result = DbService.execute(query, 'r')
     response = []
     for row in result:
         response.append(Game(row))

@@ -70,7 +70,7 @@ def get_game(name):
 
 @app.route('/games')
 def get_games():
-    return json.dumps(gameService.get_all_games())
+    return json.dumps(gameService.get_all_games(request.args.get('name')))
 
 
 @app.route('/game/update', methods=['POST'])

@@ -31,9 +31,9 @@ def get_game(name):
         return MessageService.generate_internal_server_error(e)
 
 
-def get_all_games():
+def get_all_games(name):
     try:
-        result = get_games()
+        result = get_games(name)
         games = []
         for game in result:
             games.append(game.to_dictionary())
