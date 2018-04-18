@@ -7,12 +7,8 @@ import services.AuthService as AuthService
 def add_order(payload):
     try:
         if check_fields_existance_in_payload(payload, 'user_id', 'game_id', 'total'):
-            order = TransactionDao.create_order(payload)
-
-            if order:
-                return MessageService.generate_success_message('success', {})
-            else:
-                return MessageService.generate_custom_message('The order could not be created', 500, {})
+            TransactionDao.create_order(payload)
+            return MessageService.generate_success_message('The order was processed successfully', {})
         else:
             return MessageService.missing_fields_request
 
@@ -26,7 +22,7 @@ def get_transaction_by_order_number(order_number):
         if order:
             return MessageService.generate_success_message('', order.to_dictionary())
         else:
-            return MessageService.generate_custom_message('No order with that order number could be found', {})
+            return MessageService.generate_success_message('No order could be found with that order number', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -37,7 +33,7 @@ def get_transactions_by_user(token):
         user_data = AuthService.decode_token(token)
         transactions = TransactionDao.retrieve_transactions_by_user(user_data['id'])
         if not len(transactions):
-            return MessageService.generate_custom_message('No orders were found', [])
+            return MessageService.generate_success_message('No orders were found', [])
 
         return MessageService.generate_success_message('', transactions)
 
@@ -52,7 +48,7 @@ def get_transactions_by_game_id(game_id):
         if len(orders):
             return MessageService.generate_success_message('', process_transactions_projection())
         else:
-            return MessageService.generate_custom_message('No orders were found', [])
+            return MessageService.generate_success_message('No orders were found', [])
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -65,7 +61,7 @@ def get_all_transactions():
         if len(orders):
             return MessageService.generate_success_message('', orders)
         else:
-            return MessageService.generate_custom_message('No orders were found', [])
+            return MessageService.generate_success_message('No orders were found', [])
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -78,9 +74,9 @@ def modify_transaction_status(payload):
     try:
         order = TransactionDao.update_transaction(payload)
         if order:
-            return MessageService.generate_success_message('', order.to_dictionary())
+            return MessageService.generate_success_message('The order has been updated', order.to_dictionary())
         else:
-            return MessageService.generate_custom_message('the order could not be updated', {})
+            return MessageService.generate_success_message('the order could not be updated', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)

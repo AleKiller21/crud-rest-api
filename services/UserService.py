@@ -11,11 +11,7 @@ def add_user(payload):
         if fields_exist:
             __set_optional_fields(payload, 'last_name', 'address', 'profile_picture', 'role')
             user = UserDao.create_user(payload)
-
-            if user:
-                return MessageService.generate_success_message('User created', user.to_dictionary())
-            else:
-                return MessageService.generate_custom_message('The user could not be added', 500)
+            return MessageService.generate_success_message('The user has been created', user.to_dictionary())
         else:
             return MessageService.missing_fields_request
 
@@ -37,7 +33,7 @@ def get_user(gamertag, token):
         if data:
             return MessageService.generate_success_message('', data.to_dictionary())
         else:
-            return MessageService.generate_custom_message('No user was found with that gamertag', {})
+            return MessageService.generate_success_message('No user with that gamertag exists', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -53,7 +49,7 @@ def get_all_users():
         if len(response):
             return MessageService.generate_success_message('', response)
         else:
-            return MessageService.generate_custom_message('No users were found', {})
+            return MessageService.generate_success_message('No users were found', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -70,9 +66,10 @@ def modify_user(payload):
                                              'profile_picture'):
             user = UserDao.update_user(payload)
             if user:
-                return MessageService.generate_success_message('', user.to_dictionary())
+                return MessageService.generate_success_message('User profile has been updated. Log out to see the '
+                                                               'changes', user.to_dictionary())
             else:
-                MessageService.generate_custom_message('No user was found', {})
+                MessageService.generate_success_message('No user was found', {})
         else:
             return MessageService.missing_fields_request
 
@@ -84,16 +81,12 @@ def remove_user(payload):
     try:
         if check_fields_existance_in_payload(payload, 'id'):
             user = UserDao.delete_user(payload['id'])
-
-            if user:
-                return MessageService.generate_success_message('', user.to_dictionary())
-            else:
-                return MessageService.generate_custom_message('No user was found', {})
+            return MessageService.generate_success_message('User has been removed', user.to_dictionary())
         else:
             return MessageService.missing_fields_request
 
     except Exception as e:
-        return MessageService.generate_internal_server_error(e)
+        return MessageService.generate_internal_server_error('The user could not be removed')
 
 
 def login(payload):

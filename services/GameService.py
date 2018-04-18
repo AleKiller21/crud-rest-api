@@ -7,16 +7,12 @@ def add_game(payload):
     try:
         if check_fields_existance_in_payload(payload, 'name', 'developer', 'publisher', 'price', 'description', 'image'):
             game = create_game(payload)
-
-            if game:
-                return MessageService.generate_success_message('', game.to_dictionary())
-            else:
-                return MessageService.generate_custom_message('The game could not be created', 500)
+            return MessageService.generate_success_message('The game has been created', game.to_dictionary())
         else:
             return MessageService.missing_fields_request
 
-    except Exception as e:
-        return MessageService.generate_internal_server_error(e)
+    except Exception:
+        return MessageService.generate_internal_server_error('The game could not be created')
 
 
 def get_game(name):
@@ -25,7 +21,7 @@ def get_game(name):
         if game:
             return MessageService.generate_success_message('', game.to_dictionary())
         else:
-            return MessageService.generate_custom_message('The game was not found', {})
+            return MessageService.generate_success_message('The game was not found', {})
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -41,7 +37,7 @@ def get_all_games(name):
         if len(games):
             return MessageService.generate_success_message('', games)
         else:
-            return MessageService.generate_custom_message('No games were found', [])
+            return MessageService.generate_success_message('No games were found', [])
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)
@@ -53,9 +49,9 @@ def modify_game(payload):
             game = update_game(payload)
 
             if game:
-                return MessageService.generate_success_message('', game.to_dictionary())
+                return MessageService.generate_success_message('The game has been updated', game.to_dictionary())
             else:
-                return MessageService.generate_custom_message('No game with that id was found', {})
+                return MessageService.generate_success_message('The game was not updated', {})
         else:
             return MessageService.missing_fields_request
 
@@ -69,9 +65,9 @@ def remove_game(payload):
             game = delete_game(payload['id'])
 
             if game:
-                return MessageService.generate_success_message('', game.to_dictionary())
+                return MessageService.generate_success_message('The game has been deleted', game.to_dictionary())
             else:
-                return MessageService.generate_custom_message('The game could not be removed', {})
+                return MessageService.generate_internal_server_error('The game could not be removed')
         else:
             return MessageService.missing_fields_request
 

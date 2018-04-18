@@ -17,7 +17,7 @@ def before_request():
 
     result = authenticate(request.endpoint, request.headers)
     if result['code'] != 200:
-        return set_headers(json.dumps(result), {'Content-Type': 'application/json'})
+        return json.dumps(result)
 
 
 @app.after_request
