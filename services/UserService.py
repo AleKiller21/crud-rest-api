@@ -77,15 +77,12 @@ def modify_user(payload):
         return MessageService.generate_internal_server_error(e)
 
 
-def remove_user(payload):
+def remove_user(id):
     try:
-        if check_fields_existance_in_payload(payload, 'id'):
-            user = UserDao.delete_user(payload['id'])
-            return MessageService.generate_success_message('User has been removed', user.to_dictionary())
-        else:
-            return MessageService.missing_fields_request
+        user = UserDao.delete_user(id)
+        return MessageService.generate_success_message('User has been removed', user.to_dictionary())
 
-    except Exception as e:
+    except Exception:
         return MessageService.generate_internal_server_error('The user could not be removed')
 
 

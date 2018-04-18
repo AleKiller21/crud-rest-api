@@ -59,17 +59,13 @@ def modify_game(payload):
         MessageService.generate_internal_server_error(e)
 
 
-def remove_game(payload):
+def remove_game(id):
     try:
-        if check_fields_existance_in_payload(payload, 'id'):
-            game = delete_game(payload['id'])
-
-            if game:
-                return MessageService.generate_success_message('The game has been deleted', game.to_dictionary())
-            else:
-                return MessageService.generate_internal_server_error('The game could not be removed')
+        game = delete_game(id)
+        if game:
+            return MessageService.generate_success_message('The game has been deleted', game.to_dictionary())
         else:
-            return MessageService.missing_fields_request
+            return MessageService.generate_internal_server_error('The game could not be removed')
 
     except Exception as e:
         return MessageService.generate_internal_server_error(e)

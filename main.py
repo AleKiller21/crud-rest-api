@@ -33,9 +33,17 @@ def after_request(response):
     return response
 
 
-@app.route('/user/add', methods=['POST'])
+@app.route('/user', methods=['POST', 'PUT'])
 def add_user():
-    return json.dumps(userService.add_user(request.json))
+    if request.method == 'POST':
+        return json.dumps(userService.add_user(request.json))
+    else:
+        return json.dumps(userService.modify_user(request.json))
+
+
+@app.route('/user/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    return json.dumps(userService.remove_user(id))
 
 
 @app.route('/user/<gamertag>')
@@ -48,19 +56,17 @@ def get_users():
     return json.dumps(userService.get_all_users())
 
 
-@app.route('/user/update', methods=['POST'])
-def update_user():
-    return json.dumps(userService.modify_user(request.json))
-
-
-@app.route('/user/delete', methods=['POST'])
-def delete_user():
-    return json.dumps(userService.remove_user(request.json))
-
-
-@app.route('/game/add', methods=['POST'])
+@app.route('/game', methods=['POST', 'PUT'])
 def add_game():
-    return json.dumps(gameService.add_game(request.json))
+    if request.method == 'POST':
+        return json.dumps(gameService.add_game(request.json))
+    else:
+        return json.dumps(gameService.modify_game(request.json))
+
+
+@app.route('/game/<int:id>', methods=['DELETE'])
+def delete_game(id):
+    return json.dumps(gameService.remove_game(id))
 
 
 @app.route('/game/<name>')
@@ -73,19 +79,12 @@ def get_games():
     return json.dumps(gameService.get_all_games(request.args.get('name')))
 
 
-@app.route('/game/update', methods=['POST'])
-def update_game():
-    return json.dumps(gameService.modify_game(request.json))
-
-
-@app.route('/game/delete', methods=['POST'])
-def delete_game():
-    return json.dumps(gameService.remove_game(request.json))
-
-
-@app.route('/order/add', methods=['POST'])
+@app.route('/order', methods=['POST', 'PUT'])
 def add_order():
-    return json.dumps(transactionService.add_order(request.json))
+    if request.method == 'POST':
+        return json.dumps(transactionService.add_order(request.json))
+    else:
+        return json.dumps(transactionService.modify_transaction_status(request.json))
 
 
 @app.route('/order/<int:order_number>')
@@ -106,11 +105,6 @@ def get_order_by_user():
 @app.route('/orders')
 def get_orders():
     return json.dumps(transactionService.get_all_transactions())
-
-
-@app.route('/order/update', methods=['POST'])
-def update_order():
-    return json.dumps(transactionService.modify_transaction_status(request.json))
 
 
 @app.route('/login', methods=['POST'])
