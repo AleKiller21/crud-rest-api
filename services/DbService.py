@@ -1,15 +1,22 @@
 from pymysql import connect
+from config import config
+import os
 
 
 class DbService:
     """Singleton service used to handle all database operations"""
 
     db = None
+    env_name = os.getenv('python_api_env')
+    env_config = config[env_name]
 
     @staticmethod
     def execute(query, operation, *params):
         if not DbService.db:
-            DbService.db = connect(host='localhost', user='root', password='ajfz1995', database='cruddemo')
+            DbService.db = connect(host=DbService.env_config['host'],
+                                   user=DbService.env_config['user'],
+                                   password=DbService.env_config['password'],
+                                   database=DbService.env_config['database'])
 
         cursor = DbService.db.cursor()
 
