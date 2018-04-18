@@ -1,6 +1,6 @@
 
 prod_env = {
-  "host": "10.102.1.219",
+  "host": "10.102.1.172",
   "user": "root",
   "password": "sandals",
   "database": "cruddemo"
