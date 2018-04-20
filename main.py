@@ -27,6 +27,8 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Content-Type', 'application/json')
 
+    if response.status_code == 404:
+        return response
     if len(response.response):
         response.status = str(json.loads(response.response[0].decode('utf-8'))['code'])
 

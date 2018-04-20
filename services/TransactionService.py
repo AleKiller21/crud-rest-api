@@ -46,7 +46,7 @@ def get_transactions_by_game_id(game_id):
         orders = TransactionDao.retrieve_transactions_by_game_id(game_id)
 
         if len(orders):
-            return MessageService.generate_success_message('', process_transactions_projection())
+            return MessageService.generate_success_message('', process_transactions_projection(orders))
         else:
             return MessageService.generate_success_message('No orders were found', [])
 
